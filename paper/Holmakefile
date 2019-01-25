@@ -1,0 +1,17 @@
+paper.pdf : paper.tex holtexbasic.sty IEEEtran.cls splncs03.bst aliascnt.sty remreset.sty paper.bib delta2.bib ev.bib
+	latexmk -pdf paper
+
+HOLHEAP = ../heap
+
+INCLUDES = $(CAKEMLDIR)/misc .. 
+
+DEPS = ../CheckerProofTheory 
+
+munge.exe : $(patsubst %,%.uo,$(DEPS))
+	$(protect $(HOLDIR)/bin/mkmunge.exe) -b ../heap $(DEPS)
+
+paper.tex : paper.htex munge.exe overrides
+	./munge.exe -m';' overrides < $< > $@
+
+holtexbasic.sty: $(HOLDIR)/src/TeX/holtexbasic.sty
+	$(CP) $< $@
