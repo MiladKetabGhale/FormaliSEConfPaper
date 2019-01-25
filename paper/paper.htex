@@ -33,7 +33,7 @@
 \newtheorem{definition}{Definition}
 \newtheorem{remark}{Remark}
 \newtheorem{example}{Example}
-\newtheorem{conjecture}{Conjecture}
+\newtheorem{conjecture}{Desideratum}
 \ifdef{\dpspecial}{
 %% tmp by Dirk
 \newcommand{\HOLtm}[1]{\texttt{#1}}
@@ -113,21 +113,25 @@ Michael.Norrish@data61.csiro.au}
 %%%%The question is how can one verify that each execution of $\mathcal{P}$ correctly computes the end result in accordance with instructions in $\mathcal{A}$?
 
 %Although full static verification is the most desirable answer to prove correctness, it is not practically possible here due to inaccessibility of source code. But even if the source were available it would not be feasible to carry such a task  because verifying every single implementation for any arbitrary STV algorithm is a Herculean significantly resource consuming agenda. Besides, any small change in implementation of an algorithm may render the whole  static verification of the implementation useless to the point that the process need to be redone from the scratch.   
-We are motivated to engineer a trustworthy practical  framework to answer the following question. How can one verify that any execution of any implementation $\mathcal{P}$ whose source code is secret of an arbitrary  known STV algorithm $\mathcal{A}$ correctly computes the end result according to instructions in $\mathcal{A}$?  
+We are motivated to 
+%engineer a trustworthy practical  framework to answer the 
+tackle the following problem. How can one verify that any execution of any implementation $\mathcal{P}$ whose source code is secret of an arbitrary  known STV algorithm $\mathcal{A}$ correctly computes the end result according to  $\mathcal{A}$?  
 
 
 
-To begin with addressing the problem, assume $\mathcal{P}$ is an implementation of an algorithm $\mathcal{A}$. We reasonably demand each execution of $\mathcal{P}$ on a given input $x$ consisting of ballots recorded in the election to output the winners $y$ and evidence $\omega$ standing as a proof of correctness of the execution.
+To begin 
+%with addressing the problem, 
+assume $\mathcal{P}$ is an implementation of an algorithm $\mathcal{A}$. We reasonably demand each execution of $\mathcal{P}$ on a given input $x$ consisting of ballots recorded in the election to output the winners $y$ and evidence $\omega$ as claim  for correctness of the execution.
 %of the election for an input $x$ consisting of election votes recorded. Given the situation, what is also sensible to ask and easy to be produce, is to make $\mathcal{P}$  also output an evidence $\omega$ of correctness of $y$. 
  Having evidence available for each execution of $\mathcal{P}$ facilitates checking correctness of the computation carried out \emph{independently} of the (source code of) $\mathcal{P}$. Therefore the original problem boils down to how one can verify the evidence of any \emph{instance of computation} with any algorithm $\mathcal{A}$.
 
 
 %New questions emerge from the above problem reformulation.  
-An evidence as such must be enough informative to offer transparency of tallying and also allow  voters, or at least a large pool of scrutineers, to verify for themselves that the tally is authentically processed as instructions of the counting scheme dictate so that winners truly reflect will of the voters. 
+The evidence as such must be enough informative to provide transparency of tallying and also allow  voters, or at least a large pool of scrutineers, to verify for themselves that the tally is authentically processed as per instructions of the counting scheme  so that winners truly reflect will of the voters. 
 %Note that evidences are produced by various instances of computation with many STV algorithms which differ from each other in their exact counting mechanism.  
-Therefore one wonders what information is enough 
+Therefore the questions becomes what information is enough 
 %for satisfying transparency and independent verifiability of tallying 
-to serve our end and what data structure for recording the information in evidence we should choose.
+for establishing transparency and verifiability of tallying  and what data structure for recording the information in evidence we should choose.
 
 %%As mentioned above, STV algorithms vary in their precise algorithmic content.  On the other hand, we aim at producing verified verifiers of evidences of these divergent algorithms through a modular process that allows us to synthesise evidence verifiers of different schemes  throughout a uniformly replicable procedure.  Hence another challenge is what generic mechanism can we craft to produce verified verifiers that validate evidences of an STV algorithm distinctively and yet be able to employ that same process for creating another verifier for a different scheme while minimising the effort in synthesising it.  
 
@@ -137,17 +141,24 @@ to serve our end and what data structure for recording the information in eviden
 %%%Through thorough analysis of various STV schemes, we come to identify a common underlying data and algorithmic structure existing in the family. We abstract this structure as a finite state machine and call it the \emph{generic STV}\cite{}. Upon each execution on a given input $x$, the machine outputs a value $y$ and an \emph{evidence} $\omega$ which is the trace of all states that the machine visits from an initial machine state where $x$ is registered to the final state where $y$ is obtained.   
 %%%%%Concrete STV algorithms are therefore realised as instantiations into the machine. Each of the instantiations  also produce an evidence for any instance of computation carried out. 
 %%%%%%%Our objective here is to independently scrutinise process of counting under any STV schemes similar to physical scrutineers who observe tallying to attest its authenticity.  Having an evidence of computation at hand, we are then able to validate or reject the instance of computation carried out by checking if all of the transitions taken to terminate at the final state where the winners are declared are correct.  
-A thorough analysis of different STV algorithms reveals existence of an underlying abstract data type common between STV algorithms. Each STV scheme operates on some ballots, each of which is a pair consisting of a preference list and a fractional value, recorded to be counted and has a quota which is the least amount of votes needed to attract in order to be elected, some candidates competing in the election, some vacancies for which candidates compete, and more importantly \emph{discrete states of computation} which encapsulate necessary  pieces of information needed to transparently know how the tallying has progressed from the beginning to the end and to be able to independently verify its correctness provided access to the information is granted. 
-
-There are two kinds of discrete states of computation. Some of them are terminal states where tallying reaches to a halting state by finding the winners of the election. The other set of states consist of non-final ones where bits and pieces of data are manipulated according to counting mechanism of the STV scheme used, to eventually obtain a terminal result. Each non-final state encloses seven pieces of data: 
+A comprehensive analysis of different STV algorithms reveals existence of a common underlying abstract data type among STV algorithms as follows. 
+%Each STV scheme operates on the following data.
+\begin{itemize}
+\item Some ballots to deal with (assuming) recorded as cast by voters. Each ballot is a pair consisting of a list expressing the preference of a voter and a fractional transfer value,
+\item a quota which is the least amount of votes needed to attract in order to be elected, 
+\item some candidates competing in the election, 
+\item some number of vacancies for which candidates compete,
+\item \emph{discrete states of computation} which encapsulate necessary  pieces of information needed to transparently know how the tallying has progressed from the beginning to the end and to be able to independently verify its correctness provided access to the information is granted. 
+\end{itemize}
+There are two kinds of discrete states of computation. Some of them are final states where tallying has reached a halting state by finding the winners of the election. The other consist of non-final ones where bits and pieces of data are manipulated according to counting mechanism of the STV scheme used, to eventually obtain an end result. Each non-final state comprises seven pieces of data: 
 \begin{itemize}
  \item\textbf{uncounted ballots} which await being counted,
  \item\textbf{tally} for holding information about the amount of votes that each candidate has hitherto attracted %up to this state of computation,
- \item\textbf{pile} to know the votes that each candidate have attracted, 
+ \item\textbf{pile} to know the ballots allocated to each candidate, 
  \item\textbf{backlog of elected} candidates who have exceeded the quota and their surplus votes awaits being transferred,
  \item\textbf{backlog of eliminated} ones whose votes awaits transfer,
  \item\textbf{elected candidates} who are the already elected ones whose surplus votes must be transferred,
- \item\textbf{continuing candidates} hopefully running in the election. 
+ \item\textbf{continuing candidates} still continuing in the election. 
  \end{itemize}
 %Data recorded in the final and non-final states as specified above   record all of the information needed and sufficient to know for independently validating a counting instance. 
 
@@ -172,7 +183,7 @@ Suppose an STV algorithm $\mathcal{A}$ is given and $Q$, $s$ and $C$ are respect
 \label{sec:Machine}
 \setlength{\abovedisplayskip}{0.5em}
 \setlength{\belowdisplayskip}{0.5em}
-We have already found out an abstract data type whose values  formally represent evidence. However we do not yet possess an operational semantics for manipulating data to validate evidence.   On one hand, the semantics must be flexible enough to accommodate variations existing in the counting mechanism of STV algorithms so that we can produce verifiers  specifically operating for validation of evidence output by their associated scheme. On the other hand it must facilitate us with designing and developing the framework modularly while offering automation of synthesising process of verifiers.
+We have already discussed an abstract data type whose values  formally represent evidence. However we do not yet possess an operational semantics for manipulating data to validate evidence.   On one hand, the semantics must be flexible enough to accommodate variations existing in the counting mechanism of STV algorithms so that we can produce verifiers  specifically operating for validation of evidence output by their associated scheme. On the other hand it must facilitate designing and developing the framework modularly while offering automation of synthesising process of verifiers.
 %in such a way that we achieve a desirable degree of modularity and automation of  the process of synthesising different verifiers.
 %evidence verifiers for various STV algorithms.
 
@@ -181,7 +192,7 @@ We have already found out an abstract data type whose values  formally represent
 
 %\subsection{STV Algorithms Analysis II}
 
-In a secondary examination of the STV family, we also identify a universal algorithmic mechanism for performing computation on evidence. This generic method comprises seven general actions~(Figure~\ref{GenSteps}) corresponding to actions that tally officers take when counting votes.
+In a secondary examination of the STV family, we also identify a general algorithmic mechanism for performing computation on evidence, which realises the \emph{commonalities} among the family members. This generic method comprises seven general actions~(Figure~\ref{GenSteps}) corresponding to actions that tally officers take when counting votes.
 \begin{figure} 
  \begin{itemize}
 \item\textbf{count} for counting the uncounted ballots,
@@ -195,14 +206,15 @@ In a secondary examination of the STV family, we also identify a universal algor
 \caption{Generic STV Counting Steps}
 \label{GenSteps}
 \end{figure}
-Each of the actions is constituted of  universal pre-conditions on when and how the action comes into effect, and ubiquitous post-conditions dictating what effect applying the action brings about by describing the new state to which computation proceeds. In fact, these conditions are the formal counterparts of the legal clauses in the textual specification of the counting scheme which tell tally officers how to proceed with tallying. 
+Each action is constituted of  pre-conditions on when and how the action comes into effect, and post-conditions dictating what effect applying the action brings about by describing the new state to which computation proceeds. In fact, these conditions are the formal counterparts of the legal clauses in the textual specification of the counting scheme which tell tally officers how to proceed with tallying, and they are common between all flavours of STV. 
 
 For example a constant pre-condition for applying elimination  asserts that there must be no uncounted ballot left and another one declares that no candidate should be electable at the current state of counting. A post-condition of elimination is that once a candidate is excluded from counting, the list of continuing candidates is updated accordingly so that the excluded candidate no longer received votes. Conjunctions of such declarations comprise what an action is and what an application of that action means.
 
 
-The underlying omnipresent abstract data type and the universal algorithmic pattern found in STV characterise components of a finite state machine which we name \emph{generic STV}~(Definition\ref{STVMachine}). The set of machine states consist of the discrete states of computation $\mathcal{S}$ mentioned earlier. The seven generic actions form the transition labels $\mathcal{T}$ of the machine. Last, the everywhere present pre- and post-conditions which define (content of)  the actions, make a small-step operational semantics for the machine.
+The underlying abstract data type and the universal algorithmic pattern found in STV characterise components of a finite state machine which we call \emph{generic STV}~(Definition\ref{STVMachine}). The set of machine states consist of the discrete states of computation $\mathcal{S}$ mentioned earlier. The seven generic actions form the transition labels $\mathcal{T}$ of the machine. Last, the everywhere present pre- and post-conditions which define (content of)  the actions, make a small-step operational semantics for the machine.
 % \begin{remark} 
-Note that the states of computation recorded in all possible  evidences now become identical with states of the generic STV. 
+Note that the states of computation recorded in all possible  evidence now become identical with machine states.
+%states of the generic STV. 
 %\end{remark}
 
 \begin{definition}[The generic STV machine]\label{STVMachine}
@@ -210,10 +222,10 @@ Let $\mathcal{S}$  and $\mathcal{T}$
 be respectively the set of machine states and transition labels.  Also assume for $t\in\mathcal{T}$, $S_{t}$ $=$ $\bigwedge_{\atop{i\leq j_{t}}} \psi_{i}$ where  $\psi_{i}$ is the formal specification (in higher-order logic) of a pre- or post-condition of $t$. Then \emph{generic STV} is the triple $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$. 
 %where $S_t$ is the sanity check condition  for  transition $t \in \mathcal{T}$.  An \emph{instance} of $M$  is a tuple $I = \langle \mathcal{T}, (R_t)_{t \in \mathcal{T}} \rangle$, where for each $t \in \mathcal{T}$, $R_t \subseteq \mathcal{S} \times \mathcal{S}$ is a rule that satisfies the sanity check condition $S_t$. 
 \end{definition}
-
+There are nonetheless variations in STV algorithms  which we  recognise  by separate \emph{instantiations} into the machine.  
 \subsection{Instantiations of the Machine with Specific STV schemes}
-
-There are nonetheless variations in the precise counting method of different STV algorithms as well. For example in the STV used for electing the upper house representatives of the Victoria state of Australia, distributing votes of an eliminated candidate occurs step by step in order of the magnitude of the fractional values that those votes carry.  Consequently, a pre-condition for applying the action is to first assure that upon each instance of applying transfer-removed action (a) exactly those votes which have the same fractional value are transferred and (b) the transfer happens according to the magnitude order. In contrast, for example, the STV used in the lower house elections of Tasmania state of Australia does not have such pre-condition simply because votes of an eliminated candidate are transferred in a single application of transfer-removed. There are also variations in post-conditions. For example transfer-elect of the STV of ACT requires distributing only the last parcel of surplus votes received by an elected candidate. But the scheme of the Victoria state specifies distributing all surplus votes of an elected candidate.  
+Differences exist between counting algorithms of STV schemes.  
+ For example in the STV used for electing the upper house representatives of the Victoria state of Australia (Victoria STV), distributing votes of an eliminated candidate occurs step by step in order of the magnitude of the fractional values that those votes carry.  Consequently, a pre-condition for applying the action is to first assure that upon each instance of applying transfer-removed action (a) exactly those votes which have the same fractional value are transferred and (b) the transfer happens according to the magnitude order. In contrast, for example, the STV used in the lower house elections of Tasmania state of Australia (Tasmania STV) does not have such pre-condition simply because votes of an eliminated candidate are transferred in a single application of transfer-removed. There are also variations in post-conditions. For example transfer-elect of the ACT STV used in the lower house elections of the ACT state of Australia requires distributing only the last parcel of surplus votes received by an elected candidate. But Victoria STV specifies transferring all surplus votes of an elected candidate.  
 
 
 We formally realise variations of STV algorithms by instantiation~(Definition\ref{STVInst}) of the generic machine. Recall that the semantics of the machine is formed by conjunctions of formally specified universally appearing pre and post-conditions in STV algorithms. An instantiation of the machine with an STV algorithm $\mathcal{A}$ happens by enriching the generic semantics by adding formal specifications of the legal clauses that are specific to $\mathcal{A}$. We hence come to define an operational semantics functioning in accordance with instructions of $\mathcal{A}$. 
@@ -221,18 +233,18 @@ We formally realise variations of STV algorithms by instantiation~(Definition\re
 Assume the generic machine $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$ as in Definition~\ref{STVMachine}. An instantiation $\hat{\mathcal{A}}$ for an STV algorithm $\mathcal{A}$ into the generic STV machine $M$ is a triple $\langle \mathcal{S}, \mathcal{T}, (S'_t)_{t \in \mathcal{T}} \rangle$, where for each $t\in\mathcal{T}$, $S'_{t}$ $=$ $S_{t}\wedge\bigwedge_{\atop{i\leq j'_{t}}} \phi_{i}$. Each $\phi_{i}$ is the formal specification of a pre- or post-condition specific to $\mathcal{A}$.   
 \end{definition}
 
-The operational semantics of each instantiation allows us performing operations such validation on evidences. Definition~\ref{verifier} lays down what verifying an evidence amount to. Informally speaking, to check if an evidence is valid one simply needs to inspect if transitions  between each two consecutive states of computation appearing in the evidence occur by a legitimate application of a counting action of the scheme used.
+The operational semantics of each instantiation allows  to perform operations such as validation on evidence. Definition~\ref{verifier} lays down what verifying an evidence amount to. Informally speaking, to check if  evidence is valid one simply needs to inspect if transitions  between each two consecutive states of computation appearing in the evidence occur by a legitimate application of a counting action of the scheme used.
 
 \begin{definition}[verifier]\label{verifier}
-Assume $\hat{\mathcal{A}}= \langle \mathcal{S}, \mathcal{T}, (S'_t)_{t \in \mathcal{T}} \rangle$ is an instantiation of the STV algorithm $\mathcal{A}$. A verifier for instances of computation with $\mathcal{A}$ is a function $\hat{\mathcal{V}}$ mapping from $\mathbb{Q}\times\mathbb{N}\times 2^{C}\times$ \textsf{List}$(\mathcal{S})$ to $\{0,1\}$ such that for any evidence $\hat{\omega} = (Q,s,C,\Omega)$, $\hat{\mathcal{V}}(\hat{\omega}) = 1$ if and only if the following holds:\\
-$\forall i\in\{1,\dots, |\Omega|~-1\}.$ \\
-\hspace*{0.2cm}$\forall \Omega_{i-1}$ $\Omega_{i}\in\mathcal{S}.$
-$\exists \Omega_{1}$ $\Omega_{2}\in$ \textsf{List} $(\mathcal{S}).$ $\Omega = \Omega_{1} + [\Omega_{i-1};\Omega_{i}] + \Omega_{2}$  
-\\\hspace*{0.4cm}$\Rightarrow \exists t\in\mathcal{T}.$  $(\Omega_{i-1},\Omega_{i})\in t$ $\wedge~\vdash\mathcal{S}'_{t}[\Omega_{i-1},\Omega_{i}]$\\ 
+Assume $\hat{\mathcal{A}}= \langle \mathcal{S}, \mathcal{T}, (S'_t)_{t \in \mathcal{T}} \rangle$ is an instantiation of the STV algorithm $\mathcal{A}$. A verifier for instances of computation with $\mathcal{A}$ is a function $\hat{\mathcal{V}}$ mapping from $\mathbb{Q}\times\mathbb{N}\times 2^{C}\times$ \textsf{List}$(\mathcal{S})$ to $\{0,1\}$ such that for any evidence $\hat{\omega} = (Q,s,C,\Omega)$ where $\Omega=\langle\Omega_{1},\dots,\Omega_{n}\rangle$, $\hat{\mathcal{V}}(\hat{\omega}) = 1$ if and only if the following holds:\\
+$\forall i\in\{1,\dots,n-1\}.$ 
+%\hspace*{0.2cm}$\forall \Omega_{i-1}$ $\Omega_{i}\in\mathcal{S}.$
+%$\exists \Omega_{1}$ $\Omega_{2}\in$ \textsf{List} $(\mathcal{S}).$ $\Omega = \Omega_{1} + [\Omega_{i-1};\Omega_{i}] + \Omega_{2}$  
+$\exists t\in\mathcal{T}.$  $(\Omega_{i-1},\Omega_{i})\in t$ $\wedge~\vdash\mathcal{S}'_{t}[\Omega_{i-1},\Omega_{i}]$\\ 
 where $\mathbb{Q}$ and $\mathbb{N}$ respectively represent the set of rational and natural numbers, $2^{C}$ is the set of all subsets of $C$, and \textsf{List}$(S)$ is the set of all possible lists of machine states. $\Omega_{i-1}$ is a pre-state and $\Omega_{i}$ is a post-state visited in the execution. The last line means that pre- and post-conditions  of applying $t$ to move from $\Omega_{i-1}$ to $\Omega_{i}$  are logically true. 
 \end{definition} 
 
-We shall next provide an example of an evidence to concretely illustrate them and exemplify how counting with an STV scheme works. 
+We shall next provide an example to concretely illustrate a piece of evidence and exemplify how STV schemes work. 
 
 %In the rest of the paper we discuss technicalities of design  and development of the framework  for modular synthesis of formally verified verifiers. 
 %However we first provide an example of an evidence to concretely illustrate them and exemplify how counting with an STV scheme works. 
@@ -311,7 +323,7 @@ We shall next provide an example of an evidence to concretely illustrate them an
 
 %%%%%%%%The process of distributing surplus votes from elected candidates and excluding the candidate with the fewest votes continues until all vacancies are filled.
 %\end{description}
- \subsection{An Example of Evidence}
+ \subsection{An Example of a Concrete Piece of Evidence}
 \label{subsec:InstEv}
 Figure~\ref{EvInst} depicts evidence of a small election whose counting algorithm is the ACT STV 
 with three candidates $a$, $b$ and $c$, and initially recorded ballots containing
@@ -321,7 +333,7 @@ The fourth line is the election result, and the remainder of the evidence are no
 outcome. Each non-final state shows uncounted ballots, tallies of candidates, piles of votes attracted, backlog of the elected, backlog of the eliminated, list of elected candidates, and list of continuing candidates. 
 
 First preferences for each candidate are computed, and ballots counted in favour of particular candidates are placed onto that candidate’s pile. Here, $a$ is the first preference on $b_{1}$, $b_{2}$, and $b_{3}$, and $b$ receives $b_{4}$, and $c$ receives $b_{5}$ . Tallies are updated so that tally of $a$ becomes 3, and $b$
-and $c$ each reach $1/1$. As $a$ exceeds the quota, he is elected and the fractional value of his surplus is updated according to the ACT scheme. Then $a$'s surplus is transferred to continuing candidates $b$ and $c$ and votes are counted according to next preferences shown on $a$'s surplus votes. $b$ and $c$ each attracts one vote. However  neither of them reaches to the quota. Therefore the weakest one $b$ is eliminated. As the number of elected and continuing candidates does not exceed the initial vacancies, the election terminates by declaring $a$ and $c$ winners.
+and $c$ each reach $1/1$. As $a$ exceeds the quota, he is elected and the fractional value of his surplus is updated according to the ACT scheme. Then $a$'s surplus is transferred to continuing candidates $b$ and $c$ and votes are counted according to next preferences shown on $a$'s surplus votes. Candidate $b$ and $c$ each attracts one vote. However  neither of them reaches to the quota. Therefore the weakest one $b$ is eliminated. As the number of elected and continuing candidates does not exceed the initial vacancies, the election terminates by declaring $a$ and $c$ winners.
 \begin{small} 
 \begin{figure}[b]
 \begin{tabular}{c@{\hspace{2cm}}c} 
@@ -361,7 +373,7 @@ Figure~\ref{PicArc} is a simplified schematic illustration of the framework modu
 \paragraph*{\textbf{Auxiliary}} The module contains specification, implementation and verification of the generic STV. It consists of subdivisions for formal specification of the machine and its components, implementation of functions  meant to be the computational counterparts of the specifications and verification of the implementations by proving that they logically satisfy their respective specifications. Moreover we include specification, implementation and verification of helper assertions which appear in many well-known STV schemes here so that Auxiliary also serves as a comprehensive library for STV. 
 \paragraph*{\textbf{Instantiations}}
   Instantiations of the generic STV happen in separate modules which we have schematically shown only two, namely   \textbf{STV}$_{1}$ and \textbf{STV}$_{2}$. An instantiation module \textbf{STV}$_{i}$ for an algorithm $\mathcal{A}$ consists of a subdivision for specification $\hat{\mathcal{A}}_{spec}$ of  the scheme and another one its implementation $\hat{\mathcal{A}}_{dec}$. 
-\paragraph*{\textbf{Proofs}} We prove that for an algorithm $\mathcal{A}$ in the preceding modules,  $\hat{\mathcal{A}}_{dec}$ is logically equivalent to $\hat{\mathcal{A}}_{spec}$. We automate proofs so that they work for various instantiations. 
+\paragraph*{\textbf{Proofs}} We prove that for an algorithm $\mathcal{A}$ in the above modules,  $\hat{\mathcal{A}}_{dec}$ is logically equivalent to $\hat{\mathcal{A}}_{spec}$. We automate proofs so that they work for various instantiations. 
 %Therefore all it would take for users is to instantiate the machine with their favoured STV scheme, if it was missing in our framework.
 \paragraph*{\textbf{Verifier}} This module formally realises  the notion of verifier in Definition~\ref{verifier}. However, it is developed in a way that automatically operates  regardless of which STV algorithm is instantiated into the machine. It has three subdivisions. A  specification $\hat{\mathcal{V}}_{spec}$ defining what a verifier is, the implementation $\hat{\mathcal{V}}_{dec}$ and proofs of equivalence of $\hat{\mathcal{V}}_{spec}$ and $\hat{\mathcal{V}}_{dec}$.
 \paragraph*{\textbf{Translation}} We translate each implementation $\hat{f}_{imp}$ in HOL4 to a proven  equivalent implementation $f_{\tau}$ in CakeML's environment by using the verified proof translator of CakeML. For example, an implementation  $\hat{\mathcal{A}}_{imp}$ of a scheme $\mathcal{A}$ and its   verifier $\hat{\mathcal{V}}_{imp}$ are  respectively translated into $\mathcal{A}_{\tau}$  and $\mathcal{V}_{\tau}$. 
@@ -398,7 +410,7 @@ For any translated verifier $\mathcal{V}_{\tau}$ and the translated evidence par
  \node[state,
   below of=Aux,
   %yshift = -2cm,
-  node distance=1.3cm,
+  node distance=1.1cm,
   anchor=center] (proof) 
  {%
  \begin{tabular}{l}
@@ -421,7 +433,7 @@ For any translated verifier $\mathcal{V}_{\tau}$ and the translated evidence par
   % STATE STVTWO
  \node[state,
   right of= proof,
-  xshift = 1.3cm,
+  xshift = 1.2cm,
   %node distance=1.5cm,
   anchor=center] (STV2) 
  {%
@@ -433,7 +445,7 @@ For any translated verifier $\mathcal{V}_{\tau}$ and the translated evidence par
  \node[state,
   below of= STV2,
   xshift = 1cm,
-  node distance=1.3cm,
+  node distance=1.2cm,
   anchor=center] (V) 
  {%
  \begin{tabular}{l}
@@ -444,7 +456,7 @@ For any translated verifier $\mathcal{V}_{\tau}$ and the translated evidence par
    \node[state,
   below of= STV1,
   xshift = - 1cm,
-  node distance=1.3cm,
+  node distance=1.2cm,
   anchor=center] (T) 
  {%
  \begin{tabular}{l}
@@ -455,7 +467,7 @@ For any translated verifier $\mathcal{V}_{\tau}$ and the translated evidence par
  \node[state,
   below of = proof,
    %xshift = 3cm,
-   node distance = 1.1cm,
+   node distance = 1cm,
   anchor=center
   %text width=2.5cm
   ] (Deep) 
@@ -542,11 +554,11 @@ For any translated verifier $\mathcal{V}_{\tau}$ and the translated evidence par
        (parser) edge [bend right= 60] node[anchor=north,above]{} (Aux);
        
 \end{tikzpicture}
-\caption{Architecture of the Framework}
+\caption{Architecture of the Framework, note that direction of arrow represents module dependencies}
 \label{PicArc}
 \end{figure}
 \paragraph*{\textbf{Compilation}} 
-Instantiations of CakeML's  compiler for generating machine executable verifiers happen in this module. For any deeply embedded $\mathcal{V}^{*}_{i}$, corresponding to $\hat{\mathcal{V}}_{dec}$ in \textbf{STV}$_{i}$, using proofs  established in \textbf{DeepSpec}, we instantiate the compiler to synthesise $x86\_64$ executable  verifier $\mathcal{V}_{i}$.  
+Instantiations of CakeML's  compiler for generating machine executable verifiers happen in this module. For any deeply embedded $\mathcal{V}^{*}_{i}$, corresponding to $\hat{\mathcal{V}}_{dec}$ in \textbf{STV}$_{i}$, using proofs  established in \textbf{DeepSpec}, we instantiate the compiler to synthesise executable  verifier $\mathcal{V}_{i}$.  
  
 
 %We explain briefly how components collectively come together. Suppose an algorithm $\mathcal{A}$ and a concrete  evidence $\omega$, such as the one in figure~\ref{EvInst},  of a real execution of $\mathcal{A}$ are given. To validate this concrete evidence, we first instantiate $\mathcal{A}$ in the machine, i.e. specify $\hat{\mathcal{A}}_{spec}$ and implement $\hat{mathcal{A}}_{imp}$. From this point onwards, all steps proceed automatically to finally generate machine executable certificate $\mathcal{V}$ for $\mathcal{A}$. 
@@ -559,11 +571,12 @@ We proceed through three steps, namely specification, implementation and verific
 Recall that we require minimising the trusted computing base  for computing with generated verifiers. The specification module consists of properties which we can use to verify that our implementations of  STV algorithms in HOL4 indeed match with the description of the counting methods used.  
  In light of Definition~\ref{STVMachine} these properties   actually form the semantics of the generic STV machine. 
 %Accordingly the semantics of each machine transition is obtained by conjunctions of formally defined assertions that stand in correspondence with legal universally appearing clauses, each of which dictates part of the vote counting mechanism,  across STV family.  
-\paragraph*{Implementation} Our final objective for creating the framework is to produce means for validating concrete evidences. To this end, we need decision procedures used for deciding whether or not a given evidence is valid. Therefore we define in the implementation sub-module boolean-valued functions meant to computationally realise logical declarations in the specification module. In particular, we implement decision procedures whose computational content  provably realises the specification of the machine semantics.  
+\paragraph*{Implementation} Our final objective for creating the framework is to produce means for validating concrete evidences. To this end, we need decision procedures used for deciding whether or not a given evidence is valid. Therefore we define boolean-valued functions in the implementation sub-module to computationally realise logical declarations in the specification module. In particular, we implement decision procedures whose computational content  provably realises the specification of the machine semantics.  
 \paragraph*{Verification} Here we formally prove that the implementations meet the expectations of their respective specifications. Therefore through verification we come to eliminate a trusted layer  required to lay in our framework.  
 
 
-We also have another motivation for developing the auxiliary module through this three-part process of specification, implementation and then verification. Familiarity, but no expertise, with our framework and its general purpose is needed for extending it to synthesise an executable verifier for one's desired STV scheme. On the one hand, an average user may lack enough skills in grasping functional programming style which we rely on for implementing verifiers in HOL4. However, the same user most probably has had exposure to formulations of mathematical properties  in first-order logic syntax. Including purely descriptive logical assertions as our specifications, proven equivalent to their implementations, facilitates the users with means to understand the functionality of components, modules and the system as a whole simply by inspecting the specifications instead of implementations carried out in a functional language.
+We also have another motivation for developing the auxiliary module through this three-part process of specification, implementation and then verification. Familiarity, but no expertise, with our framework and its general purpose is needed for extending it to synthesise an executable verifier for one's desired STV scheme. On the one hand, an average user may lack enough skills in grasping functional programming style which we rely on for implementing verifiers in HOL4. However, the same user most probably has had exposure to formulations of mathematical properties  in first-order logic syntax. Including purely descriptive logical assertions as our specifications, proven equivalent to their implementations, facilitates the users with means to understand the functionality of components, modules and the system as a whole simply by inspecting the specifications instead of implementations.
+% carried out in a functional language.
 
 %\subsection{Specification and Implementation of the Machine}
 \subsection{Data Structure of Machine States}
@@ -571,13 +584,10 @@ We also have another motivation for developing the auxiliary module through this
  We choose the data structure  given in Definition~\ref{judgement} for implementing the abstract data type underlying the generic STV.  We have four reasons for this choice of data structure. 
  \begin{itemize}
  %\paragraph*{1}
+\item As the abstract syntactic representation of evidence closely represents concrete evidences, designing the parser and inspecting  its  correctness is less challenging.  
  \item HOL4 has well developed libraries comprised of verified assertions of operations on list structure. By structuring the data on lists, we facilitate us and users  with exploitation of  already verified tools to formalise the framework and avoid inventing the unnecessary from the scratch. 
- %\paragraph*{2}
- \item HOL4 also has mighty tactics for discharging proof obligations on assertions involving list structure and operations on it. We therefore come to provide us with means for ease of verification of the formalised assertions.
- %\paragraph*{3} 
- \item Understanding the data structure used in the  implementation of the framework is critical for ease of  its usability and extensibility by third parties.  The type $\mathit{judgement}$ closely models concrete evidences such as the one in figure~\ref{EvInst}. Therefore one can sensibly perceive the  abstraction step taken for modelling  concrete data which in turn enhances understandability of the framework and its mechanism.  
- %\paragraph*{4}
- \item As the abstract syntactic representation of evidences closely represents concrete evidences, designing the parser and inspecting  its  correctness is less challenging.  
+ \item HOL4 also has well-developed tactics for discharging proof obligations on assertions involving list structure and operations on it. We therefore come to provide us with means for ease of verification of the formalised assertions.
+ \item Understanding the data structure used in the  framework implementation is critical for ease of  its usability and extensibility by third parties.  The type $\mathit{judgement}$ closely models concrete evidences such as the one in figure~\ref{EvInst}. Therefore one can sensibly perceive the  abstraction step taken for modelling  concrete data which in turn enhances understandability of the framework and its mechanism. 
    \end{itemize}
  %\begin{definition}
 \begin{definition}\label{judgement}
@@ -590,7 +600,7 @@ We formalise machine states as an inductive type  $\mathit{judgement}$ whose con
 
  A $\mathit{Final~(w)}$ judgement declares $w$ as winners of the election. A  $\mathit{NonFinal~(ba,t,p,bl_{1},bl_{2},e,h)}$ judgement  consists of uncounted ballots $ba$, tally $t$, pile $p$, $bl_{1}$ the backlog of elected candidates, $bl_{2}$ the backlog of eliminated candidates, and $e$ and $h$ for the list of elected and continuing~(hopeful) candidates. The types  $\mathit{ballots}$, $\mathit{tallies}$ and $\mathit{piles}$ are respectively abbreviations for  $\mathit{((cand ~list)\times rat) list}$,   $\mathit{(cand\times rat)~list}$ and $\mathit{(cand\times(ballots~list)~list) ~list}$ where $\mathit{rat}$ is the HOL4 type of fractional numbers.
 \end{definition}
- Remember that objects whose type is $\mathit{piles}$ serve as containers for recording the ballots attracted by each candidate and storing them under the candidate's name. Our choice for type of piles allows us to store the ballots received by each candidate in chunks of lists rather than one single list containing all of them.  We have two reasons for designing the type of piles as it stands instead of $\mathit{(cand\times(ballots~list))~list}$;  
+ Recall that objects whose type is $\mathit{piles}$ serve as containers for recording the ballots allocated to each candidate. Our choice for type of piles allows us to store the ballots received by each candidate in chunks of lists rather than one single list containing all of them.  We have two reasons for designing the type of piles as it stands instead of $\mathit{(cand\times(ballots~list))~list}$;  
 %\begin{itemize}
 %\item[1.] 
 \paragraph*{(a)} Some STV schemes such as the lower house ACT and Tasmania STV, employ a nation called ''last parcel''. In short the last parcel of a candidate is the collection of those ballots received by the candidate at the last round of application of the count transition which made the tally of the candidate reach or exceed the quota and therefore be elected.  Only the last parcel, instead of all, of an elected candidate is then distributed the ballots received by the candidate. Also  they update the fractional transfer value, that each ballot in the last parcel  awaiting transfer carries, based on the length of the last parcel. To  accommodate this notion and its effect, we need identifying the ballots constituting the last parcel of an elected. We hence formalise the pile to record, for each  continuing candidate, a list consisting of lists of ballots each received upon  chronological applications of count transition.  Once a candidate is elected their pile may be manipulated differently from the continuing candidates. 
@@ -601,7 +611,9 @@ We formalise machine states as an inductive type  $\mathit{judgement}$ whose con
 Implementing piles in this way enables us to tailor the semantics of the transfer and elect transitions and their instantiations in such a way to modularly formalise several STV schemes which use the last parcel or stepwise distribution of votes form eliminated candidates or the combination of both. 
 
 
-There is also a reason for choosing the type $rat$ as the underlying arithmetic for the formalisation, instead of other candidates such as floating numbers. Elections with an STV counting scheme have a small margin of victory especially for the last vacancy left to fill. This margin may happen to be less than magnitude of the mistake in calculations due to  aggregation of rounding errors as it is with floating points.  Therefore one must sensibly avoid paying the high  cost of electing a wrong candidate by falling into traps of imprecisions in calculations introduced by unintelligent choices. Using exact fractions allows us safe  correct handling of calculations. 
+There is also a reason for choosing the type $rat$  
+%as the underlying arithmetic for the formalisation, 
+instead of e.g. floating numbers. Elections with an STV counting scheme have a small margin of victory especially for the last vacancy left to fill. This margin may happen to be less than magnitude of the error caused by accumulation of rounding errors as it is with floating points.  Therefore one must sensibly avoid paying the high  cost of electing a wrong candidate by falling into traps of imprecise calculations due to unintelligent choices. Using exact fractions allows safe  correct handling of calculations. 
 \subsection{The Semantics and its Auxiliary Components}
 \label{sec:MachineSem}
 %\subsection{Specification and Implementation of the Semantics}
@@ -609,7 +621,7 @@ There is also a reason for choosing the type $rat$ as the underlying arithmetic 
 %We define a formal specification of the machine semantics and also implement a computational counterpart.  The specification (implementation) of the machine semantics is comprised of the collection of the specification  (respectively implementation) of semantics for individual transitions.  To demonstrate how the semantics of transitions and subsequently the machine are formalised, we present formalisation of the transfer-elect transition and its semantics.   
 
 
-The semantics of each machine transition label is constituted of conjunctions of formally specified  omnipresent pre- and post-conditions across STV schemes which legally inform the officers when and how to take an action and what the immediate effect is. To demonstrate the process of specification, implementation and verification of the machine transitions and their semantics, we discuss the transfer-elect transition.
+The semantics of each machine transition label consists of conjunctions of formally specified general pre- and post-conditions across STV schemes which enforce when and how to take a tallying action and what the immediate effect is. To demonstrate the process of specification, implementation and verification of the machine transitions and their semantics, we discuss the transfer-elect transition.
 
 
 STV schemes \emph{explicitly} declare four conditions that must be satisfied  for any legitimate application of transfer-elect; 
@@ -647,7 +659,7 @@ Transfer-elect, as is the case for other formalised transitions, is parametrised
   
 \begin{small}
 \begin{holthmenv}
-  \HOLthm[def,width=60]{CheckerSpec.Valid_Init_CandList_def}
+  \HOLthm[def,width=70]{CheckerSpec.Valid_Init_CandList_def}
 \end{holthmenv}
 \end{small}
 The predicate Valid\textunderscore{}Init\textunderscore{}CandList which realises item (6) asserts that each candidate has a pile and a tally. We also declare that elements in the first component of the tally $t$ and pile $p$ are distinct. Therefore we come to satisfy item (1).
@@ -664,7 +676,7 @@ We implement for each of the above declarations a counterpart computational \und
 \end{small}
 \begin{small}
 \begin{holthmenv}
-  \HOLthm[def,width=60]{Checker.Valid_PileTally_dec2_def}
+  \HOLthm[def,width=75]{Checker.Valid_PileTally_dec2_def}
 \end{holthmenv}
 \end{small}
 We prove that the implementations and specification match:
@@ -680,7 +692,11 @@ Conjunctions of the computational implementations  define a computational twin T
 \end{holthmenv}
 \end{small}
 
-In the same manner as elaborated for transfer-elect, we obtain specification, computational implementation for other machine transitions as well. Then the specification (implementation) of the machine semantics is comprised of the collection of specification (resp. implementation) of the individual transitions. We formally prove that for each transition, the implementation corresponds with its specification.
+Similarly 
+%as elaborated for transfer-elect, 
+we obtain specification and computational implementation for other machine transitions as well. Then the specification (implementation) of the machine semantics is comprised of the collection of specification (resp. implementation) of the individual transitions. We formally prove 
+%formally prove that for 
+each transition implementation  matches with its specification.
 %Drawing on equivalences  established for the components, we demonstrate the correspondence  between the specification and implementation of the transitions semantics. 
 
 \begin{theorem}
@@ -691,7 +707,10 @@ Assume $M^{spec} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \math
 %\noindent\textbf{Machine Semantics:} The specification (implementation) of the machine semantics is comprised of the collection of specification (resp. implementation) of the individual transitions.
 
 
-One can already proceed to synthesise an executable verifier from the machine. However, such a verifier  generically operates for any algorithm that belongs to the STV family without being able to distinguish between evidence produced by computation with different STV members. To produce verifiers that can distinctively check information in evidence of specific STV algorithms, we need to enrich the machine semantics. As mentioned earlier, enrichment of the semantics which we refer to as instantiation happens by augmenting pre- and post-conditions particular to individual algorithms. %This process to which we refer as instantiation is discussed next. 
+One can already proceed to synthesise an executable verifier from the machine. Such a verifier can correctly decide if given evidence $\omega$ claimed to have been produced by an algorithm whose counting scheme is STV, instead of e.g. PR list schemes or FPTP. 
+% However, such a verifier  generically operates for any algorithm that belongs to the STV family without being able to distinguish between evidence produced by computation with different STV members. 
+However we wish to generate verifiers that can recognise and validate according to which specific STV algorithm the evidence $\omega$ has been output. Hence we need to enrich the computational content of the machine semantics with more  pre- and post-conditions which are particular to individual STV schemes. We refer to this enrichment process as instantiation of the machine and discuss it further below.
+%However to produce verifiers that can distinctively check information in evidence of specific STV algorithms, we need to enrich the machine semantics. As mentioned earlier, enrichment of the semantics which we refer to as instantiation happens by augmenting pre- and post-conditions particular to individual algorithms. %This process to which we refer as instantiation is discussed next. 
 
 \section{Instantiations of the Machine}\label{sec:InstMachine}
 %\subsection{Instantiation with the ACT STV}
@@ -706,13 +725,13 @@ Under section 'Step 3' and 'transfer surplus from elected candidates' the protoc
 %\emph{If a candidate has received more than a quota of first preference votes, all the ballot papers received by the candidate are distributed at a reduced value called a fractional transfer value. If a candidate has received more votes than the quota following a transfer of votes from another elected candidate or from an excluded candidate, only that "last parcel" of ballot papers that the candidate received are distributed to continuing candidates at a fractional transfer value.} We can reformulate the clause as follows.
 %\end{itemize}
 \begin{itemize}
-\item[$\bullet_{1}$] no more candidate exceeds the quota
+\item[$\bullet_{1}$] no  candidate exceeds the quota
 %\item[$\bullet_{2}$] ballots received by a candidate are piled in separate chunks called parcels. 
 \item[$\bullet_{2}$] the  parcel of an elected with surplus is not empty.
 \item[$\bullet_{3}$] distribution of the surplus of an elected candidate proceeds in one single step.
 \item[$\bullet_{4}$] surplus of elected candidates is distributed one at a time beginning with those who are elected earlier. 
 \item[$\bullet_{5}$] pile of the candidate whose surplus is transferred is emptied in the post-state of transfer-elect.
-\item[$\bullet_{6}$] always the last parcel of votes  received (which resulted in a surplus) are transferred. It may be that the last parcel is the only parcel in a candidate's pile (if only one application of the count action has occurred), or more parcels exist (if several actions of count has happened as a result of earlier  elect, transfer or eliminate actions)
+\item[$\bullet_{6}$] only the last parcel of votes  received (which resulted in a surplus) is transferred. It may be that the last parcel is the only parcel in a candidate's pile (if only one application of the count action has occurred), or more parcels exist (if several actions of count has happened as a result of earlier  elect, transfer or eliminate actions)
 %\end{itemize}
 %The fourth clause of the section has three sentences but only the first and the last are significant as far as transferring surplus is concerned;
 %Moreover we reword the fourth clause as follows.
@@ -767,7 +786,7 @@ We next demonstrate how the framework modularly extends to instantiations  with 
 \subsection{Variations in Instantiation}
 We discuss instantiation of the transfer-elect  based on the Victoria and CADE STV. As we have already illustrated how a specification and the corresponding implementation of an algorithm advance, we therefore only elaborate on how they vary from ACT STV in textual descriptions of their semantics and subsequently their implementations. 
 \subsubsection{Victoria STV}
-Legislature of Victoria's counting scheme does not strictly speak about the notion of parcel. However, as explained under the subsection~\ref{MachineData} it transfers votes of an eliminated candidate stepwise which therefore requires separating votes into different chunks (or parcels). Having eliminated possible misunderstanding, note that Victoria STV accords with ACT STV  on every $\bullet_{i}$ item except for $i\in\{6,8\}$.
+Legislature of Victoria's counting scheme does not strictly speak about the notion of parcel. However, as explained under the subsection~\ref{MachineData} it transfers votes of an eliminated candidate stepwise which therefore requires separating votes into different chunks (or parcels). Having eliminated possible misunderstanding, note that Victoria STV matches with ACT STV  on every $\bullet_{i}$ item except for $i\in\{6,8\}$.
 %the sixth and eighth clauses. 
 %for $i\in\{1,2,3,4,5,7\}$ but varies from it for the rest of ACT's conditions as follows.
 \begin{itemize}
@@ -793,7 +812,7 @@ Note that we deal with updating fractional transfer value in the semantics of el
 \end{holthmenv}
 \end{small}
 \subsubsection{CADE STV}
-This scheme is radically different than ``standard'' STV algorithms. In particular, to the best of our knowledge, every ``normal'' STV algorithm at least respects $\bullet_{1}$. However CADE violates not only this condition but also all of the ACT's transfer-elect semantics components except $\bullet_{2}$. This outrageous behaviour of CADE permeates to the semantics of other transitions as well to an extent where the algorithm is sometimes questioned to be a true member  of the STV family. But our framework flexibly  accommodates even the extraordinary ones. We catalogue CADE's transfer-elect informal semantics  conditions as follows.
+This scheme is radically different than ``standard'' STV algorithms. In particular, to the best of our knowledge, every ``normal'' STV algorithm at least respects $\bullet_{1}$. However CADE violates not only this condition but also all of the ACT's transfer-elect semantics components except $\bullet_{2}$. This unorthodox behaviour of CADE permeates to the semantics of other transitions as well to an extent where the algorithm is sometimes questioned to be a true member  of the STV family. But our framework flexibly  accommodates even the extraordinary ones. We catalogue CADE's transfer-elect informal semantics  conditions as follows.
 \begin{itemize}
 \item[$\star_{1}$] the backlog of  elected candidates contains one element.
 \item[$\star_{2}$] parcel of the element in the backlog of elected candidates is not empty.
@@ -816,9 +835,9 @@ The clause $\star_{4}$ itself consists of the following sub-clauses.
 In this section, when we instantiated transitions of the machine, particularly transfer-elect, we named instantiations differently. For example, we represented instantiation of transfer-elect with the Victoria STV by  Transfer\underline{Vic}Dec. This choice was out of pedagogical purposes to assist the reader with understanding the work. In actual engineering however we practice a sensible alternative. We carry out different instantiations of the machine in separate modules but uniformly name instantiations of the transitions. For example, for instantiation of the machine with the Victoria STV, we have a module accordingly named and inside the module we refer, for instance, to instantiation of transfer-elect as TransferDec or TransferSpec without the infix Vic.
 \end{remark}
 \begin{remark}\label{rewrting}
-Core calculus of HOL4 uses \emph{term rewriting} to manipulate assertions expressed in higher-order logic and ML programming style. 
+The Core calculus of HOL4 uses \emph{term rewriting} to manipulate assertions expressed in higher-order logic and ML programming style. 
 %Definitions of assertions happen using the symbol $\Leftrightarrow$. 
-Since HOL4 is a rewriting system, what appears as the name of an assertion on the left of $\Leftrightarrow$ is therefore secondary to its definitional content on the right side. In light of the previous remark, we can uniformly refer to \emph{names} instantiations of transitions regardless of the algorithm used. Therefore we can formulate evidence verifier based on the names of the transitions but call in the desired instantiation  module to embody the names with the semantics  of the algorithm intended to obtain a verifier for. Consequently the verifier, translation, deepSpec and compilation modules which all depend on instantiation modules as their parents  are    developed once and for all.   
+Since HOL4 is a rewriting system, what appears as the name of an assertion on the left of $\Leftrightarrow$ is therefore secondary to its definitional content on the right side. In light of the previous remark, we can uniformly refer to \emph{names} of instantiated transitions regardless of the algorithm used. Therefore we can formulate evidence verifier based on the names of the transitions but call in the desired instantiation  module to embody the names with the semantics  of the algorithm intended to obtain a verifier for. Consequently the verifier, translation, deepSpec and compilation modules which all depend on instantiation modules as their parents  are    developed once and for all.   
 \end{remark}
 
  
@@ -830,19 +849,19 @@ Once an instantiation of the machine  completes
 Based on our experience, proving  such equivalence 
 %between specification of a machine  instantiation and the counterpart  implementation 
 roughly requires 200 lines of HOL4 encoding. %However maximising automation of the synthesis process of verifiers and consequently enhancing the usability of the framework is one of our milestones. Therefore we desire to  practically approximate the following conjecture as much possible as it is for the system. 
-We desire to automate them in a way that they practically approximate the following Conjecture.   
+We desire to automate them in a way that they practically approximate the following desideratum.    
  \begin{conjecture}\label{conj}
  Assume $\mathcal{A}$ is an \underline{arbitrary} STV algorithm, $\hat{\mathcal{A}}_{spec}= \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \mathcal{T}} \rangle$ is a specification of $\mathcal{A}$'s instantiation into the machine and $\hat{\mathcal{A}}_{dec}= \langle \mathcal{S}, \mathcal{T}, (S_{t}^{dec})_{t \in \mathcal{T}} \rangle$ is its implementation. 
   Then for any $t\in\mathcal{T}$ the framework \underline{automatically} proves  $\mathcal{S}_{t}^{dec}\Leftrightarrow\mathcal{S}_{t}^{spec}$. 
  \end{conjecture}
 We engineer the framework in a way that the proofs module calls instantiation modules as its parents  one by one.
-In light of the remark~\ref{naming} in the proofs module,  we uniformly declare the desired equivalence between the specification and implementation of an instantiation transition label and discharge the proof.
+ Considering Remark~\ref{naming},   we uniformly declare the desired equivalence between the specification and implementation of an instantiated transition and discharge the proof in the proofs module.
 % As HOL4's calculus is essentially a  rewriting system, upon each distinct calling of the parent instantiation module, names of transitions appearing in the proofs module are substituted with their definitional content as declared in the called parent. Therefore we can uniformly deal with the equivalences mentioned without any collision of naming. 
-Engineered this way, under two scenarios the conjecture holds for the proofs module. However for a third scenario, proofs in the module may break so that discharging the equivalences  becomes a semi-automatic interactive procedure. The proofs nonetheless remain reusable after proper refinements so that one needs not encoding 200 lines again. 
+Engineered this way, the desideratum is met under the following two scenarios for the proofs module. However for a third scenario, proofs in the module may break so that proving the equivalences  becomes a semi-automatic interactive procedure. The proofs nonetheless remain reusable after proper refinements so that one needs not re-encoding 200 lines. 
 
 
 %they satisfy the conjecture under two scenarios but fail for a third. Nonetheless we shall explain shortly afterwards how the proofs can be refined to function for the third scenario as well.   
- \paragraph*{Scenario one} If the algorithm $\mathcal{A}$ already exists in our framework then the conjecture is satisfied. Note that we have already formalised and verified instantiation of the machine with five different STV algorithms.
+ \paragraph*{Scenario one} We have already formalised and verified instantiation of the machine with five different STV algorithms. If the algorithm $\mathcal{A}$ already exists in our framework then the desideratum is satisfied. No effort beyond following simple instructions to execute on the command line is required to synthesise an executable verifier.  
  \paragraph*{Scenario two} Another possibility is that 
  %the algorithm intended to be instantiated into the machine 
  $\mathcal{A}$ as a whole does not literally match with any of the already existing instantiations of the machine. However, clauses describing pre- and post-conditions of transitions which are components of the semantics of $\mathcal{A}$ do exist in the auxiliary module. Then all one needs doing is to call the formal  specifications of the clauses and their respective implementations into the specification and implementation of transitions, respectively,  to formally obtain an instantiation of the algorithm. In this case, the proofs also succeed in satisfying the conjecture. 
@@ -869,12 +888,12 @@ Engineered this way, under two scenarios the conjecture holds for the proofs mod
 %According to Definition~\ref{verifier}, given an instantiation of the machine, a verifier for a piece of evidence $\omega$ of an instance of computation with the algorithm checks the evidence witness  that the executions carried out, which produced the evidence,  happen based on the semantics (instructions) of the instantiated algorithm.  
 %In other words, a verifier  of evidence produced for instances of computation with the algorithm simply must check if each two consecutive machine states recorded in the evidence happen to be the pre- and post-states of a transition instantiated according to instructions of the algorithm. Such a conception of evidence verifier can be formalised to automatically function for any successful instantiation of the machine.
 %We design a module called verifier and similar to the proofs module call each instantiation module as a parent one at a time. The rewriting aspect of HOL4 allows the names of transitions generically appearing in the verifier module to be substituted with the content of the called instantiation module. 
-According to definition~\ref{verifier} the notion of verifier depends on instantiation of the machine with an algorithm $\mathcal{A}$. In light of Remark~\ref{naming}, we only need to develop the verifier module once and simply vary the parent instantiation module to adapt the definition of the verifier for a different instantiation. So let's assume $\hat{\mathcal{A}}_{spec}= \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \mathcal{T}} \rangle$ and $\hat{\mathcal{A}}_{dec}= \langle \mathcal{S}, \mathcal{T}, (S_{t}^{dec})_{t \in \mathcal{T}} \rangle$ are the specification and implementation of an STV algorithm $\mathcal{A}$ where for any $t\in\mathcal{T}$, $\mathcal{S}_{t}^{dec}\Leftrightarrow\mathcal{S}_{t}^{spec}$. 
+According to Definition~\ref{verifier} the notion of verifier depends on instantiation of the machine with an algorithm $\mathcal{A}$. In light of Remark~\ref{naming}, we only need to develop the verifier module once and simply vary the parent instantiation module to adapt the definition of the verifier for a different instantiation. So let's assume $\hat{\mathcal{A}}_{spec}= \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \mathcal{T}} \rangle$ and $\hat{\mathcal{A}}_{dec}= \langle \mathcal{S}, \mathcal{T}, (S_{t}^{dec})_{t \in \mathcal{T}} \rangle$ are the specification and implementation of an STV algorithm $\mathcal{A}$ where for any $t\in\mathcal{T}$, $\mathcal{S}_{t}^{dec}\Leftrightarrow\mathcal{S}_{t}^{spec}$. 
  Then we define $\mathcal{V}_{spec}$ as the specification of the verifier  and implement $\mathcal{V}_{dec}$ as its  computational counterpart. Drawing on proofs established between $\mathcal{S}_{t}^{dec}$ and $\mathcal{S}_{t}^{spec}$ for the transitions, we formally prove the following result.
 \begin{theorem} 
  Suppose the algorithm $\mathcal{A}$ is instantiated in the machine as above. Then for any piece of evidence $\hat{\omega}= (Q,s,C,\Omega)$ produced by an execution of $\mathcal{A}_{dec}$, $\mathcal{V}_{spec}~(Q,s,C)~ \Omega\Leftrightarrow\mathcal{V}_{dec}~(Q,s,C)~\Omega$.    
 \end{theorem}
-As the specification and implementation are equivalent, we shall only discuss on the formalisation of the implementation. We first define the decision procedure Valid\textunderscore{}Step which for given two machine states $j_{0}$ and $j_{1}$ decides if a transition from the former to the latter occurs by an application of a transition.
+As the specification and implementation are equivalent, we shall only discuss the formalisation of the implementation. We first define the decision procedure Valid\textunderscore{}Step which for given two machine states $j_{0}$ and $j_{1}$ decides if a transition from the former to the latter occurs by an application of a transition.
 \begin{small}
  \begin{holthmenv}
   \HOLthm[def,width=60]{Checker.Valid_Step_def}
@@ -886,19 +905,19 @@ Then we implement the function valid\textunderscore{}judgements\textunderscore{}
   \HOLthm[def,width=60]{Checker.valid_judgements_dec_def}
 \end{holthmenv}
 \end{small} 
-The verifier in HOL4 is eventually defined a follows where the function initial\textunderscore{}Judgement\textunderscore{}dec decides if the first element of a piece of evidence is a machine state correctly records information of the initial state of tallying votes where no one has yet attracted any vote and the backlogs of elected and eliminated and the list of elected are all empty and every candidate is continuing. 
+The verifier in HOL4 is eventually defined a follows where the function initial\textunderscore{}Judgement\textunderscore{}dec decides if the first element of a piece of evidence is a machine state correctly recording information of the initial state of tallying votes where no one has yet attracted any vote, the backlogs of elected and eliminated and the list of elected are all empty and every candidate is continuing. 
 %where every candidate's tally is zero, all the piles are empty, the backlogs of elected and eliminated and the list of elected are empty and the list of continuing candidates consists of all competing candidates in the election.
 \begin{small}
  \begin{holthmenv}
   \HOLthm[def,width=65]{Checker.Check_Parsed_Certificate_def}
 \end{holthmenv}
 \end{small} 
-One can use Check\textunderscore{}Parsed\textunderscore{}Certificate to run small sample elections manually encoded in HOL4's environment. However real evidence such as the one in figure are stored in a file in an operating system which need to be read, parsed, and processed for validation. Therefore we need an executable verifier in an operating system's environment. On the other hand, Check\textunderscore{}Parsed\textunderscore{}Certificate despite its infeasibility for computation, is proven to behave correctly as the specification $\mathcal{V}_{spec}$ expects. How can we synthesise from Check\textunderscore{}Parsed\textunderscore{}Certificate an executable verifier $\mathcal{V}$ that is both efficient for actual computation and provably correct with respect to $\mathcal{V}_{spec}$ and thus trustworthy? To this end, we invoke the verified CakeML's proof translator tool, its ecosystem and the compiler.
+One can use Check\textunderscore{}Parsed\textunderscore{}Certificate to run small sample elections manually encoded in HOL4's environment. However real evidence such as the one in figure are stored in a file in an operating system which need to be read, parsed, and processed for validation. Therefore we need an executable verifier in an operating system's environment. On the other hand, Check\textunderscore{}Parsed\textunderscore{}Certificate despite its infeasibility for computation, is proven to behave correctly as the specification $\mathcal{V}_{spec}$ expects. How can we synthesise from it an executable verifier $\mathcal{V}$ that is both efficient for actual computation and provably correct with respect to $\mathcal{V}_{spec}$ and thus trustworthy? To this end, we invoke the verified CakeML's proof translator tool, its ecosystem and the compiler.
 
 Using the verified CakeML's translator we obtain a translated version of the verifier $\mathcal{V}_{\tau}$. Thanks to the translator, we are guaranteed that every property proven for  
- Check\textunderscore{}Parsed\textunderscore{}Certificate and its components also holds for $\mathcal{V}_{\tau}$ and its components. Therefore correctness of the verifier in HOL4 provably extends to that of $\mathcal{V}_{\tau}$. The translated verifier $\mathcal{V}_{\tau}$ is a pure function operating in CakeML's environment. In order to synthesise an executable verifier that actually opens files, parses evidence lines and validates them according to $\mathcal{V}_{spec}$, we implement a deeply embedded function called check\textunderscore{}count in CakeML's ecosystem.  CakeML has a Basis library developed for modelling and verifying properties about I/O semantics of the executable versions  of a deeply embedded impure function.  Using this modelling we specify and prove that \underline{upon compilation} check\textunderscore{}count behaves as follows. 
+ Check\textunderscore{}Parsed\textunderscore{}Certificate and its components also holds for $\mathcal{V}_{\tau}$ and its components. Therefore correctness of the verifier in HOL4 provably extends to that of $\mathcal{V}_{\tau}$. The translated verifier $\mathcal{V}_{\tau}$ is a pure function operating in CakeML's environment. To synthesise an executable verifier that actually opens files, parses evidence lines and validates them according to $\mathcal{V}_{spec}$, we implement a deeply embedded function called check\textunderscore{}count in CakeML's ecosystem.  CakeML has  libraries developed for modelling and verifying properties about I/O semantics of the executable versions  of a deeply embedded impure function.  Using this modelling we specify and prove that the specified and \underline{compiled} check\textunderscore{}count behaves as follows. 
  
- check\textunderscore{}count upon synthesis accepts a file as input on the standard line, opens the file consisting of  evidence which we intend to validate, parses the header of the evidence consisting of the quota, number of seats and competing candidates in the election. If the header is well-formed, then check\textunderscore{}count proceeds to parse two judgement lines of the evidence at a time and if the lines  successfully parse into  values of the type judgement (the type of the machine states) then checks if  the transition happening between them \emph{corresponds with the specification of the verifier in HOL4 ($\mathcal{V}_{spec}$)}. This process of reading evidence lines, parsing them and checking them continues until either the evidence is accepted as valid or  check\textunderscore{}count encounters a malformed judgement line or an invalid transition step from one parsed judgement (machine state) to another  in which case it returns an error messages  informing us where it takes place.  
+ The function check\textunderscore{}count accepts a file as input on the command line, opens the file consisting of  evidence which we intend to validate, parses the header of the evidence consisting of the quota, number of seats and competing candidates in the election. If the header is well-formed, then check\textunderscore{}count proceeds to parse two judgement lines at a time and if the lines  successfully parse into  values of the type judgement (the type of the machine states) then checks if  the transition happening between them \emph{corresponds with the specification of the verifier in HOL4 ($\mathcal{V}_{spec}$)}. This process of reading evidence lines, parsing and checking them continues until either the evidence is accepted as valid or  check\textunderscore{}count encounters a malformed judgement line or an invalid transition step from one parsed judgement (machine state) to another  in which case it returns an error messages  informing us where it occurs.  
  
 
  
