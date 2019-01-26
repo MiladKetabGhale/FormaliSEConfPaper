@@ -668,18 +668,19 @@ Engineered this way, the desideratum is met under the following two scenarios fo
  \paragraph*{Scenario one} We have already formalised and verified instantiation of the machine with five different STV algorithms. If the algorithm $\mathcal{A}$ already exists in our framework then the desideratum is satisfied. No effort beyond following simple instructions to execute on the command line is required to synthesise an executable verifier.  
  \paragraph*{Scenario two} Another possibility is that 
  %the algorithm intended to be instantiated into the machine 
- $\mathcal{A}$ as a whole does not literally match with any of the already existing instantiations of the machine. However, clauses describing pre- and post-conditions of transitions which are components of the semantics of $\mathcal{A}$ do exist in the auxiliary module. Then all one needs doing is to call the formal  specifications of the clauses and their respective implementations into the specification and implementation of transitions, respectively,  to formally obtain an instantiation of the algorithm. In this case, the proofs also succeed in satisfying the conjecture. 
+ $\mathcal{A}$ as a whole does not literally match with any of the already existing instantiations of the machine. However, clauses describing pre- and post-conditions of transitions which are components of the semantics of $\mathcal{A}$ do exist in the auxiliary module. Then all one needs doing is to call the formal  specifications of the clauses and their respective implementations into the specification and implementation of transitions, respectively,  to formally obtain an instantiation of the algorithm. In this case, the proofs also succeed in satisfying the desideratum. 
  \paragraph*{Scenario three} 
-  
  Suppose there is a clause in description of $\mathcal{A}$ whose specification, and  therefore implementation,  does not exist in the auxiliary module. Then one trivially has to extend the auxiliary module by specifying and implementing that clause and then verifying the implementation correct against the specification.  If one was overconfident in their implementation, then they can take the implementation as its specification in which case there no verification is required.  Note that as including the generic formal machine transitions in the semantics of each transition instantiation is mandatory  
  there are few  numbers of such clauses and consequently few lines of encoding needed to formalise them. 
  
  Once the proofs of equivalence between the specification and implementation of a machine instantiation either automatically or interactively succeed, the rest of verifier synthesis process for the instantiated algorithm completely automatically follows to eventually obtain an executable verifier. 
 \section{Modular Synthesis of Verifiers}\label{sec:Syn}
 
-According to Definition~\ref{verifier} the notion of verifier depends on instantiation of the machine with an algorithm $\mathcal{A}$. In light of Remark~\ref{naming}, we only need to develop the verifier module once and simply vary the parent instantiation module to adapt the definition of the verifier for a different instantiation. So let's assume $\hat{\mathcal{A}}_{spec}= \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \mathcal{T}} \rangle$ and $\hat{\mathcal{A}}_{dec}= \langle \mathcal{S}, \mathcal{T}, (S_{t}^{dec})_{t \in \mathcal{T}} \rangle$ are the specification and implementation of an STV algorithm $\mathcal{A}$ where for any $t\in\mathcal{T}$, $\mathcal{S}_{t}^{dec}\Leftrightarrow\mathcal{S}_{t}^{spec}$. 
- Then we define $\mathcal{V}_{spec}$ as the specification of the verifier  and implement $\mathcal{V}_{dec}$ as its  computational counterpart. Drawing on proofs established between $\mathcal{S}_{t}^{dec}$ and $\mathcal{S}_{t}^{spec}$ for the transitions, we formally prove the following result.
-\begin{theorem} 
+According to Definition~\ref{verifier} the notion of verifier depends on instantiation of the machine with an algorithm $\mathcal{A}$. In view of Remark~\ref{naming}, we only need to develop the verifier module once and simply vary the parent instantiation module to adapt the verifier definition for a different instantiation. So let's assume $\hat{\mathcal{A}}_{spec}=\langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \mathcal{T}} \rangle$ and $\hat{\mathcal{A}}_{dec}= \langle \mathcal{S}, \mathcal{T}, (S_{t}^{dec})_{t \in \mathcal{T}} \rangle$ are the specification and implementation of an STV algorithm $\mathcal{A}$ where for any $t\in\mathcal{T}$, $\mathcal{S}_{t}^{dec}\Leftrightarrow\mathcal{S}_{t}^{spec}$. 
+ Then we define $\mathcal{V}_{spec}$ as the specification of the verifier  and implement $\mathcal{V}_{dec}$ as its  computational counterpart. Drawing on 
+ %proofs established
+ the match between $\mathcal{S}_{t}^{dec}$ and $\mathcal{S}_{t}^{spec}$ for each $t$, we formally prove Theorem~\ref{EqVerifier}.
+\begin{theorem}\label{EqVerifier} 
  Suppose the algorithm $\mathcal{A}$ is instantiated in the machine as above. Then for any piece of evidence $\hat{\omega}= (Q,s,C,\Omega)$ produced by an execution of $\mathcal{A}_{dec}$, $\mathcal{V}_{spec}~(Q,s,C)~ \Omega\Leftrightarrow\mathcal{V}_{dec}~(Q,s,C)~\Omega$.    
 \end{theorem}
 As the specification and implementation are equivalent, we shall only discuss the formalisation of the implementation. We first define the decision procedure Valid\textunderscore{}Step which for given two machine states $j_{0}$ and $j_{1}$ decides if a transition from the former to the latter occurs by an application of a transition.
@@ -694,7 +695,7 @@ Then we implement the function valid\textunderscore{}judgements\textunderscore{}
   \HOLthm[def,width=60]{Checker.valid_judgements_dec_def}
 \end{holthmenv}
 \end{small} 
-The verifier in HOL4 is eventually defined a follows where the function initial\textunderscore{}Judgement\textunderscore{}dec decides if the first element of a piece of evidence is a machine state correctly recording information of the initial state of tallying votes where no one has yet attracted any vote, the backlogs of elected and eliminated and the list of elected are all empty and every candidate is continuing. 
+The verifier in HOL4 is eventually defined a follows where the function initial\textunderscore{}Judgement\textunderscore{}dec decides if the first element of input evidence is a machine state correctly recording data of the initial state of tallying votes where no one has yet attracted any vote, the backlogs of elected and eliminated and the list of elected are all empty and every candidate is continuing. 
 \begin{small}
  \begin{holthmenv}
   \HOLthm[def,width=65]{Checker.Check_Parsed_Certificate_def}
@@ -709,7 +710,9 @@ Using the verified CakeML's translator we obtain a translated version of the ver
  
 \section{Experimental Results}
 
-Figure~\ref{ParamACT} illustrates the lower house election electorates of the ACT state of Australia with the size of their respective input valid ballots and parameters (seats and candidates) for the elections held in years 2008 and 2012. Figure~\ref{EvACT} shows some of the experimental results performed on real historical data of these districts. For each election, we obtain evidence  by executing a Haskell program\footnote{Source code at \url{https://github.com/MiladKetabGhale/Modular_Checker}} computing winners of each election  according to ACT STV. Then the verifier synthesised for validating instances of computation with the ACT STV verifies each evidence as valid\footnote{Using one processor of an Intel Core i7-7500U CPU\@ 2.70 GHz$\times$4}. Note that certifying evidence  validity is costlier than detecting the invalidity of evidence of the same size, because for the former  \emph{every}  transition has to be verified while the latter  is detected before the verifier processes the whole evidence. 
+Figure~\ref{ParamACT} illustrates the lower house election electorates of the ACT state of Australia with the size of their respective input valid ballots and parameters (seats and candidates) for the elections held in years 2008 and 2012. Figure~\ref{EvACT} shows some of the experimental results performed on real historical data of these districts. For each election, we obtain evidence  by executing a Haskell program\footnote{Source code at \url{https://github.com/MiladKetabGhale/Modular_Checker}} computing winners of each election  according to ACT STV. Then the verifier synthesised for validating instances of computation with the ACT STV verifies each evidence as valid\footnote{Using one processor of an Intel Core i7-7500U CPU\@ 2.70 GHz$\times$4}. Note that certifying evidence  validity is costlier than detecting the invalidity of evidence of the same size, because the former takes parsing  \emph{all} lines and verifying \emph{every} transition  while the latter does not. 
+%is detected before the verifier processes the whole evidence. 
+%because for the former  \emph{every}  transition has to be verified while the latter  is detected before the verifier processes the whole evidence. 
 \begin{figure}[t]
 \centering
 \begin{small}
@@ -748,7 +751,7 @@ Molonglo&195.6&12063&2008\\
 \end{figure}
 
 
-Contrary to the folklore that theorem provers are basically meant for verification, rather than efficient computation, the generated verifier for ACT STV performs great. For example, Molonglo electorate is the biggest electoral district among the lower elections in terms of the constituency magnitude and vacancies. Despite  costly computation carried out to meticulously examine correctness of every small detail in the evidence, the verifier validates it in about three hours. Considering the typical time lapse in publicly announcing real election results, this performance is reasonably outstanding.  
+Contrary to the folklore that theorem provers are basically meant for verification, rather than efficient computation, the generated verifier for ACT STV performs great. For example, Molonglo electorate is the biggest electoral district among the lower elections in terms of the constituency magnitude and vacancies. Despite  costly computation for meticulously examining correctness of every small detail in the evidence, the verifier validates it in about three hours. Considering the typical time lapse in publicly announcing real election results, this performance is reasonably outstanding.  
 
 
 %We have implemented a Haskell program computing winners of input ballots Molonglo is the biggest electorate of the lower house elections in Australia both in terms of constituency and size (number of vacancies). 
