@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1548390250 "paper.tex" "paper.pdf" "paper" 1548391802
+["pdflatex"] 1548474657 "paper.tex" "paper.pdf" "paper" 1548474658
   "/etc/texmf/web2c/texmf.cnf" 1449621832 1101 af7716885e081ab43982cab7b4672c1a ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
@@ -61,6 +61,7 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb" 1248133631 32915 7bf7720c61a5b3a7ff25b0964421c9b6 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb" 1248133631 32587 1788b0c1c5b39540c96f5e42ccd6dae8 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1248133631 32716 08e384dc442464e7285e891af9f45947 ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb" 1248133631 32626 4f5c1b83753b1dd3a97d1b399a005b4b ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb" 1248133631 32442 c975af247b6702f7ca0c299af3616b80 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1248133631 37944 359e864bd06cde3b1cf57bb20757fb06 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti7.pfb" 1248133631 36607 d654cb3f2bc54f57509240071db3bffa ""
@@ -139,6 +140,7 @@
   "/usr/share/texlive/texmf-dist/tex/latex/trimspaces/trimspaces.sty" 1253232110 1380 971a51b00a14503ddf754cab24c3f209 ""
   "/usr/share/texlive/texmf-dist/tex/latex/underscore/underscore.sty" 1273862289 10722 1e2a550b7f07af2b195b71b3fc7bf3ff ""
   "/usr/share/texlive/texmf-dist/tex/latex/url/url.sty" 1388531844 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
+  "/usr/share/texlive/texmf-dist/tex/latex/wrapfig/wrapfig.sty" 1137111090 26220 3701aebf80ccdef248c0c20dd062fea9 ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1503347518 31075 dbb81bd39d798acf14cc121a151f7fe7 ""
   "/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcore.code.tex" 1304191498 1006 b103be0bfc8c1682ff1fa9760697a329 ""
   "/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex" 1304191498 17851 c112f6fe3b1889f91d54568be38c934d ""
@@ -208,10 +210,11 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1503438166 1346346 7f2b8b715a9ddb095afe3697a6ba02b5 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1539290923 3822875 8124630ab578c2b9a63f125d7309ebec ""
   "IEEEtran.cls" 1548391237 288304 b67b6fc6c2abb39f9b461923f5199343 ""
+  "bal-cropped.pdf" 1548474613 18157 95ddd5a11d2822e780478d6ad5369bb4 ""
   "holtexbasic.sty" 1548391769 5396 cae005b36924e63d08a557b811fb9098 ""
-  "paper.aux" 1548391200 2989 acf26812f08e50c8c04feafcce552189 ""
-  "paper.tex" 1548391777 110485 79b3760e732da428fd84f7a99227fe04 ""
+  "paper.aux" 1548474658 3519 cc7255bd0694521822c4d09a35da30e7 ""
+  "paper.tex" 1548474614 121526 4e98a74fd7a5dda7149a97473d144037 ""
   (generated)
-  "paper.log"
-  "paper.pdf"
   "paper.aux"
+  "paper.pdf"
+  "paper.log"
