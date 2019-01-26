@@ -94,6 +94,9 @@ Michael.Norrish@data61.csiro.au}
 
 \maketitle
 \begin{abstract}
+Single transferrable vote (STV) is a family of preferential voting systems, different instances of which are used in binding elections throughout the world. We give a formal specification of this family, from which we derive fully verified tools that verify the computation for various instances of STV vote counting. These tools validate the probably correct execution of a run of a vote counting algorithm, based on a transcript of the count.
+
+Our framework distils the similarities and differences of various instances of STV and gives a uniform and modular way of synthesising verifiers for its various instances, and provides the flexibility and ease for adapting and extending it to a variety of STV schemes. We minimise the trusted base in correctness of the tools produced by using the HOL4 and CakeML as the technical basis. We first formally specify and verify the tools in HOL4 and then obtain the machine executable versions for the tools by relying on the verified proof translator and the compiler of the CakeML. Moreover, proofs that we establish in HOL4 and CakeML are almost completely automated so that new verified instances of STV can be created with no (or minimal) extra proof. Finally, our experimental results with executable code demonstrate feasibility of deploying the framework for verifying real size elections having an STV counting algorithm.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -102,6 +105,80 @@ Michael.Norrish@data61.csiro.au}
 \section{Introduction}\label{sec:intro}
 %\setlength{\abovedisplayskip}{0.5em}
 %\setlength{\belowdisplayskip}{0.5em}
+Single transferable vote (STV)\cite{DFar} is a preferential voting scheme used in various jurisdictions around the world, including Ireland, Malta, India, Pakistan, Australia, New Zealand and some municipalities of the United States, typically for multi-seat constituencies.  A ballot is a preference-ordered list of candidates, typically obtained specifying a numerical preference for each candidate appearing on the ballot paper.
+% as illustrated in Figure
+%\footnote{DP: remove figure and explain textually if low on space}
+%\ref{fig:ballot}. 
+
+
+%\begin{figure}\label{fig:ballot}
+%\begin{center}
+%\includegraphics[width=0.18\textwidth]{bal-cropped.pdf}
+%\end{center}
+%\caption{A hypothetical STV ballot}
+%\end{figure}
+
+Each specific STV scheme first determines a \emph{quota}, i.e. the (minimal) number of votes that a candidate needs to attract to be elected (often the Droop quota \cite{Droop:1881:MER}). The quota, mostly but not always, depends on the number of ballots cast, and the number of vacancies to fill. Once the quota has been determined, tallying proceeds as follows:
+\begin{enumerate}
+  \item count all first preference votes
+  \item if a candidate's first preference votes are above the quota, this candidate is elected
+  \item if an elected candidate has received votes in excess of the quota, the surplus votes are transferred to the next preference 
+  %(possibly resulting in more candidates being elected)
+  \item if there are still vacancies to fill and no candidate is  being elected, the candidate with the least number of first preference votes is eliminated, and their votes are transferred to the next preference (possibly resulting in more candidates being elected)
+  \item the process continues until either all vacancies are filled, or the number of elected and continuing (not yet eliminated) candidates matches the number of vacancies.
+  %candidates together with the candidates not yet eliminated matches the number of vacancies.
+\end{enumerate}
+
+This informal description is necessarily imprecise, with details differing widely between jurisdictions. For example,
+the details of precisely which excess ballots are being transferred after candidates have been elected, the order in which surplus ballots are being transferred vary widely between different jurisdictions. 
+
+The goal of this paper is to advance formal methods in elections by demonstrating how STV vote counting can be verified in a modular, transparent, and practical feasible way over a minimal computational trust base:  we show how to synthesise practically feasible and provably correct verifies for a large class of STV schemes in a modular and almost fully automated way. 
+
+
+%\texttt{Possibly explain transparent and trust base?}
+%Goals.
+%\begin{itemize}
+%  \item verification of computation of an entire family of STV
+%  algorithms
+%  \item advance the use of formal methods in elections
+%  \item minimize the trust base 
+%  \item practical feasibility (development / runtime)
+%  \item transparency
+%\end{itemize}
+
+We achieve this by first giving a formal definition STV (called \emph{generic STV}) 
+that  encompasses the entire family of STV vote counting
+schemes. This definition necessarily under-specifies any particular STV vote counting scheme, but fixes both basic data structures and mode of computation common to all instances of STV. Trustworthiness is achieved by
+not verifying the \emph{software} that computes the result, but instead by verifying \emph{evidence} that substantiates the correctness of the count. Evidence records and corresponds to the individual steps taken in the computation of winners 
+%(That is, our approach is an instance of verifiable computation \footnote{DP: reference}). 
+%The evidence directly corresponds to the individual steps of the count
+(and could so also be verified, or spot-checked manually), giving transparency. We minimize the computational trust base by verifying our executables down to the machine level using a combination of HOL \cite{hol} and CakeML \cite{cake}. 
+
+We observe that every instance of STV performs the same \emph{actions} (e.g. count first preferences, transfer a surplus, eliminate a candidate, etc.) where the precise interpretation of action differs. We formalise these actions as rules that advance the state of the count towards a final result. Evidence for an instance of computation then becomes a sequence of rule applications applied to perform this computation. While generic STV abstracts the commonalities, each \emph{instance} of STV formally specifies the
+pre- and postconditions for each rule as well as a boolean function that decides whether a rule has been applied correctly. 
+
+Executable evidence verifiers are constructed almost
+automatically:  almost all of the ensuing proof obligations are discharged generically, and we fully  automate the subsequent translation into machine-level verified executable using CakeML.
+
+
+
+%Approach.
+%\begin{itemize}
+%  \item formal definition of the family of STV algorithms
+%  \item trustworthyness through external (certificate) validation
+%  \item verification of certificates, rather than of implementations
+%  \item certificates are rule applications
+%  \item trustworthyness through trustworthy certificate verifiers
+%  \item minimal computational trust base through  cakeml and hol
+%  \item practical feasibility through modularity and proof
+%  automation
+%  \item full automation of of cakeml translation
+%  \item automation of discharge of proof obligations
+%\end{itemize}
+
+We evaluate our framework by analysing the degree of automation and modularity achieved, and by giving realistic benchmarks results over real-world election data.
+
+In summary, we present a framework that allows us to formally specify instances of STV and sythesise an executable certificate verifier in a modular way that is itself verified down to the machine level.
 \section{Evidences}
 \label{sec:DataEv}
   
@@ -762,9 +839,17 @@ Some work employ other theorem proving means such Celf or HOL4.  Schurmann and D
 %Ghale et al design a framework for modular formalisation and verification of STV algorithms in Coq. The current work discussed in this paper is orthogonal to the Coq framework as it deals with verification of the computation performed by the Haskell programs extracted from Coq using its  automatic program extraction. Moreover the framework developed in Coq cannot cover those STV algorithms that use random selection of surplus votes for transferring them such as the Senate STV of the New South Wales state in Australia. However, our framework here can perfectly be adjusted to verify executions of programs that compute based on such algorithms. Pattinson and Tiwari verify the Schulze Voting algorithm in Coq and use the extraction mechanisms of 
 \section{Conclusion}
 
-
-
-%\bibliographystyle{splncs03}
-%\bibliography{paper,delta2,ev}
+\begin{thebibliography}{00}
+\bibitem{Droop:1881:MER}
+H.R. Droop, On Methods of Electing Representatives. J. of the Statistical
+  Society of London  44(2), 1881, pp.141--202
+\bibitem{DFar}
+D.M. Farrell, Electoral Systems: A Comparative Introduction, 2nd ed., New York: Palgrave Macmillan, 2011
+\bibitem{cake}
+R. Kumar, M.O. Myreen, M. Norrish, S. Owens, CakeML: A Verified
+  Implementation of ML, POPL, 2014
+\bibitem{hol}
+K. Slind, M. Norrish, A Brief Overview of HOL4, Theorem Proving in Higher Order Logics, Springer, 2008
+\end{thebibliography}
 \end{document}
 % vim: ft=tex
