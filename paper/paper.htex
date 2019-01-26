@@ -828,15 +828,81 @@ Molonglo&195.6&12063&2008\\
 \end{figure}
 Contrary to the folklore that theorem provers are basically meant for verification, rather than efficient computation, the generated verifier for ACT STV performs great. For example, Molonglo electorate is the biggest electoral district among the lower elections in terms of the constituency magnitude and vacancies. Despite  costly computation for meticulously examining correctness of every small detail in the evidence, the verifier validates it in about three hours. Considering the typical time lapse in publicly announcing real election results, this performance is reasonably outstanding.  
 \section{Related Work}
-Use of theorem proving for verifying vote counting algorithms or their computation is an emerging field. There is much expected to yet appear in future. Especially to our best knowledge only Ghale et al use theorem proving and the notion of certifying algorithms to verify  instances of computation with one specific STV algorithm (used in some union elections in Australia). They approach the problem similar to what  we do here. However, the underlying data structure and the algorithmic content which they formalise does not allow modular formalisation, verification and synthesis of various verifiers. It simply operates, however significantly efficiently, for merely one STV scheme where adapting it to other schemes requires considerable effort of re-encoding (sometimes the whole data structure) and expertise in dealing with HOL4 and CakeML. 
+
+Use of theorem proving to verify vote counting in elections
+is an emerging field. The only use of theorem proving and certifying
+algorithms that we are aware is our own previous work \footnote{DP:
+Reference} which just verifies a single instance of STV. 
+While the overall approach is similar, 
+the underlying data
+structure and the algorithmic content which is being formalised does not
+allow modular specification, verification and synthesis of 
+verifiers for different types of STV: only a single STV algorithm is
+being verified. 
+Adapting to other schemes
+requires considerable effort of re-encoding (sometimes the whole
+data structure) and non-trivial expertise with HOL4 and CakeML. 
 
 
-There is however work on formalisation and verification of  algorithms for correctly computing election results, rather than checking correctness of computation performed, by relying on heavy height verification methods. We catalogue them according to the tool used in their work. 
+Other approaches focus on the 
+formalisation and verification of
+algorithms for correctly computing election results, rather than
+checking correctness of computation performed. This is usually based
+on so-called heavy weight formal methods (interactive theorem
+proving) and uses a variety of different tools. 
 
-Some use the theorem prover Coq to formalise the algorithm, verify some properties about it. Then they employ the automatic program extraction of Coq to obtain Haskell or OCaml programs to provably compute election results based on the algorithm for any real input data to the program. These programs output verifiable evidence upon each execution. Some of them implement a verifier for independently scrutinising correctness of instances of computation carried out. However the verifier is not verified. They implement their verifiers as a Haskell program without formally demonstrating that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there are other unverified layers to trust in as well. For example  they rely on the GHC compiler to execute the program in the operating system. As GHC is not a verified compiler one has to trust the executable machine code also behaves correctly. 
+<Name of first author> et. al. \footnote{DP: reference} use the Coq
+theorem prover to formalise the algorithm\footnote{DP: which?} and  verify
+some of its properties. Then they employ the automatic program
+extraction of Coq to obtain Haskell or OCaml programs to provably
+compute election results based on the algorithm for any real input
+data to the program. These programs output verifiable evidence upon
+each execution. <Name of first author> et. al. \footnote{DP:
+reference} implement a verifier for independently
+scrutinising correctness of instances of computation carried out.
+However the verifier itself is not verified. Verifiers are
+implemented
+as a Haskell program without formally demonstrating that the
+verifier itself computes correctly. Moreover, even trusting that the
+verifier is reliable, there are other unverified layers to trust in
+as well. For example  they rely on the GHC compiler to execute the
+program in the operating system. As GHC is not a verified compiler
+one has to trust the executable machine code also behaves correctly. 
 
-Some work employ other theorem proving means such Celf or HOL4.  Schurmann and DeYoung who pioneered use of theorem proving in vote counting use Linear Logic to specify that semantics of a specific STV which is similar to Victoria STV except that it transfers votes of an eliminated candidate at once. Although the program obtained from the formalisation performs decently, reading their encoding is challenging due to complexity of Linear logic syntax. As the expressive power of Linear logic is limited compared to higher-order logic, their definition of the count action, for example, is comprised of eight auxiliary assertions which further complicates understandability of the encoding and therefore adaptability and usability of this approach. Dawson et al formalise Hare-Clark STV of Tasmania state in the theorem prover HOL4 and verify properties about the algorithm. They however manually transliterate their  HOL4 implementation into a ML compilable program. There are several issues with such an approach. For example, manual code translation is not a verified process and the semantics of the source (HOL4) and the target (ML) differ. Therefore verification established for the HOL4 implementation does not legitimately extend to the transliterated one.
-%Ghale et al design a framework for modular formalisation and verification of STV algorithms in Coq. The current work discussed in this paper is orthogonal to the Coq framework as it deals with verification of the computation performed by the Haskell programs extracted from Coq using its  automatic program extraction. Moreover the framework developed in Coq cannot cover those STV algorithms that use random selection of surplus votes for transferring them such as the Senate STV of the New South Wales state in Australia. However, our framework here can perfectly be adjusted to verify executions of programs that compute based on such algorithms. Pattinson and Tiwari verify the Schulze Voting algorithm in Coq and use the extraction mechanisms of 
+Others employ other theorem proving means such Celf or HOL4.
+Schurmann and DeYoung \footnote{DP: reference}
+have pioneered the use of theorem proving in vote
+counting and use Linear Logic to specify that semantics of a specific
+STV which is similar to Victoria STV except that it transfers votes
+of an eliminated candidate at once. Although the program obtained
+from the formalisation performs decently, reading their encoding is
+challenging due to complexity of Linear logic syntax. As the
+expressive power of Linear logic is limited compared to higher-order
+logic, their definition of the count action, for example, uses
+eight auxiliary assertions which further complicates
+the encoding and therefore both adaptability and
+usability of this approach. 
+Dawson et al \footnote{DP: reference} formalise Hare-Clark STV of
+Tasmania state in the theorem prover HOL4 and verify properties
+about the algorithm. They however manually transliterate their  HOL4
+implementation into a ML program. There are several
+issues with such an approach. For example, manual code translation
+is not a verified process and the semantics of the source (HOL4) and
+the target (ML) differ. Therefore verification established for the
+HOL4 implementation does not provably extend to the
+transliterated one.
+%Ghale et al design a framework for modular formalisation and
+%verification of STV algorithms in Coq. The current work discussed
+%in this paper is orthogonal to the Coq framework as it deals with
+%verification of the computation performed by the Haskell programs
+%extracted from Coq using its  automatic program extraction.
+%Moreover the framework developed in Coq cannot cover those STV
+%algorithms that use random selection of surplus votes for
+%transferring them such as the Senate STV of the New South Wales
+%state in Australia. However, our framework here can perfectly be
+%adjusted to verify executions of programs that compute based on
+%such algorithms. Pattinson and Tiwari verify the Schulze Voting
+%algorithm in Coq and use the extraction mechanisms of 
 \section{Conclusion}
 
 \begin{thebibliography}{00}
