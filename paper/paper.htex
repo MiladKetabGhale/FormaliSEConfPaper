@@ -912,7 +912,7 @@ The verifier in HOL4 is eventually defined a follows where the function initial\
   \HOLthm[def,width=65]{Checker.Check_Parsed_Certificate_def}
 \end{holthmenv}
 \end{small} 
-One can use Check\textunderscore{}Parsed\textunderscore{}Certificate to run small sample elections manually encoded in HOL4's environment. However real evidence such as the one in figure are stored in a file in an operating system which need to be read, parsed, and processed for validation. Therefore we need an executable verifier in an operating system's environment. On the other hand, Check\textunderscore{}Parsed\textunderscore{}Certificate despite its infeasibility for computation, is proven to behave correctly as the specification $\mathcal{V}_{spec}$ expects. How can we synthesise from it an executable verifier $\mathcal{V}$ that is both efficient for actual computation and provably correct with respect to $\mathcal{V}_{spec}$ and thus trustworthy? To this end, we invoke the verified CakeML's proof translator tool, its ecosystem and the compiler.
+One can use Check\textunderscore{}Parsed\textunderscore{}Certificate to run small sample elections manually encoded in HOL4's environment. However real evidence such as figure~\ref{EvInst} are stored in a file in an operating system which need to be read, parsed, and processed for validation. Therefore we need an executable verifier in an operating system's environment. On the other hand, Check\textunderscore{}Parsed\textunderscore{}Certificate despite its infeasibility for computation, is proven to behave correctly as the specification $\mathcal{V}_{spec}$ expects. How can we synthesise from it an executable verifier $\mathcal{V}$ that is both efficient for actual computation and provably correct with respect to $\mathcal{V}_{spec}$ and thus trustworthy? To this end, we invoke the verified CakeML's proof translator tool, its ecosystem and the compiler.
 
 Using the verified CakeML's translator we obtain a translated version of the verifier $\mathcal{V}_{\tau}$. Thanks to the translator, we are guaranteed that every property proven for  
  Check\textunderscore{}Parsed\textunderscore{}Certificate and its components also holds for $\mathcal{V}_{\tau}$ and its components. Therefore correctness of the verifier in HOL4 provably extends to that of $\mathcal{V}_{\tau}$. The translated verifier $\mathcal{V}_{\tau}$ is a pure function operating in CakeML's environment. To synthesise an executable verifier that actually opens files, parses evidence lines and validates them according to $\mathcal{V}_{spec}$, we implement a deeply embedded function called check\textunderscore{}count in CakeML's ecosystem.  CakeML has  libraries developed for modelling and verifying properties about I/O semantics of the executable versions  of a deeply embedded impure function.  Using this modelling we specify and prove that the specified and \underline{compiled} check\textunderscore{}count behaves as follows. 
@@ -942,6 +942,50 @@ Using the verified CakeML's translator we obtain a translated version of the ver
 %\subsection{Compilation of Executable Verifiers}
 
 \section{Experimental Results}
+
+Figure~\ref{ParamACT} illustrates the lower house election electorates of the ACT state of Australia with the size of their respective input valid ballots and parameters (seats and candidates) for the elections held in years 2008 and 2012. Figure~\ref{EvACT} shows some of the experimental results performed on real historical data of these districts. For each election, we obtain evidence  by executing a Haskell program computing winners of each election  according to ACT STV. Then the verifier synthesised for validating instances of computation with the ACT STV verifies correctness of the evidence.
+\begin{figure}[t]
+\centering
+\begin{small}
+\begin{tabular}{|c | c | c | c | c|}
+\hline
+Electorate&Ballots&Candidates&Seats&year\\
+\hline
+Brindabella&63562&20&5&2012\\
+\hline
+Ginnindra&66076&27&5&2012\\
+\hline
+Molonglo&88266&40&7&2008\\
+\hline
+\end{tabular}
+\end{small} 
+\caption{Parameters of the ACT Lower house elections 2008/2012} 
+\label{ParamACT}
+\end{figure}
+\begin{figure}[h]
+\centering
+\begin{small}
+\begin{tabular}{|c | c | c | c | c|}
+\hline
+Electorate&Evidence size (mb)&Validation time (sec)&year\\
+\hline
+Brindabella&57.5&1627&2012\\
+\hline
+Ginnindra&72.7&1789&2012\\
+\hline
+Molonglo&195.6&12063&2008\\
+\hline
+\end{tabular}
+\end{small} 
+\caption{Evidence Validation for the ACT Lower house elections 2008/2012}
+\label{EvACT} 
+\end{figure}
+
+
+Contrary to the folklore that theorem provers are basically meant for verification, rather than efficient computation, the generated verifier for ACT STV performs great. For example, Molonglo electorate is the biggest electoral district among the lower elections in terms of the constituency magnitude and vacancies. Despite  costly computation carried out to meticulously examine correctness of every small detail in the evidence, the verifier validates it in about three hours. Considering the typical time lapse in publicly announcing real election results, this performance is reasonably outstanding.  
+
+
+%We have implemented a Haskell program computing winners of input ballots Molonglo is the biggest electorate of the lower house elections in Australia both in terms of constituency and size (number of vacancies). 
 
 \section{Related Work}
 \section{Conclusion}
