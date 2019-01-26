@@ -132,7 +132,7 @@ Each specific STV scheme first determines a \emph{quota}, i.e. the (minimal) num
 This informal description is necessarily imprecise, with details differing widely between jurisdictions. For example,
 the details of precisely which excess ballots are being transferred after candidates have been elected, the order in which surplus ballots are being transferred vary widely between different jurisdictions. 
 
-The goal of this paper is to advance formal methods in elections by demonstrating how STV vote counting can be verified in a modular, transparent, and practical feasible way over a minimal computational trust base:  we show how to synthesise practically feasible and provably correct verifies for a large class of STV schemes in a modular and almost fully automated way. 
+The goal of this paper is to advance formal methods in elections by demonstrating how STV vote counting can be verified in a modular, transparent, and practical feasible way over a minimal computational trust base:  we show how to synthesise efficient and provably correct verifies for a large class of STV schemes in a modular and almost fully automated. 
 
 
 %\texttt{Possibly explain transparent and trust base?}
@@ -545,7 +545,7 @@ Implementing piles in this way enables us to tailor the semantics of the transfe
 
 There is also a reason for choosing the type $rat$  
 %as the underlying arithmetic for the formalisation, 
-instead of e.g. floating numbers. Elections with an STV counting scheme have a small margin of victory especially for the last vacancy left to fill. This margin may happen to be less than magnitude of the error caused by accumulation of rounding errors as it is with floating points.  Therefore one must sensibly avoid paying the high  cost of electing a wrong candidate by falling into traps of imprecise calculations due to unintelligent choices. Using exact fractions allows safe  correct handling of calculations. 
+instead of e.g. floating numbers. Elections with an STV counting scheme have a small margin of victory especially for the last vacancy left to fill \cite{MBlo}. This margin may happen to be less than magnitude of the error caused by accumulation of rounding errors as it is with floating points.  Hence one must sensibly avoid the high  cost of electing a wrong candidate by falling into traps of imprecise calculations due to unintelligent choices. Using exact fractions allows safe handling of calculations. 
 \subsection{The Semantics and its Auxiliary Components}
 \label{sec:MachineSem}
 
@@ -738,7 +738,7 @@ We desire to automate them in a way that they practically approximate the follow
   Then for any $t\in\mathcal{T}$ the framework \underline{automatically} proves  $\mathcal{S}_{t}^{dec}\Leftrightarrow\mathcal{S}_{t}^{spec}$. 
  \end{conjecture}
 We engineer the framework in a way that the proofs module calls instantiation modules as its parents  one by one.
- Considering Remark~\ref{naming},   we uniformly declare the desired equivalence between the specification and implementation of an instantiated transition and discharge the proof in the proofs module.
+ Considering Remark~\ref{naming},   we uniformly declare the desired equivalence between the specification and implementation of an instantiated transition and discharge the proof in the  module.
 
 
 Engineered this way, the desideratum is met under the following two scenarios for the proofs module. However for a third scenario, proofs in the module may break so that proving the equivalences  becomes a semi-automatic interactive procedure. The proofs nonetheless remain reusable after proper refinements so that one needs not re-encoding 200 lines.  
@@ -828,28 +828,66 @@ Molonglo&195.6&12063&2008\\
 \end{figure}
 Contrary to the folklore that theorem provers are basically meant for verification, rather than efficient computation, the generated verifier for ACT STV performs great. For example, Molonglo electorate is the biggest electoral district among the lower elections in terms of the constituency magnitude and vacancies. Despite  costly computation for meticulously examining correctness of every small detail in the evidence, the verifier validates it in about three hours. Considering the typical time lapse in publicly announcing real election results, this performance is reasonably outstanding.  
 \section{Related Work}
-Use of theorem proving for verifying vote counting algorithms or their computation is an emerging field. There is much expected to yet appear in future. Especially to our best knowledge only Ghale et al use theorem proving and the notion of certifying algorithms to verify  instances of computation with one specific STV algorithm (used in some union elections in Australia). They approach the problem similar to what  we do here. However, the underlying data structure and the algorithmic content which they formalise does not allow modular formalisation, verification and synthesis of various verifiers. It simply operates, however significantly efficiently, for merely one STV scheme where adapting it to other schemes requires considerable effort of re-encoding (sometimes the whole data structure) and expertise in dealing with HOL4 and CakeML. 
+Use of theorem proving for verifying vote counting algorithms or their computation is an emerging field. There is much expected to yet appear in future. Especially to our best knowledge only Ghale et al \cite{GhaleVSTTE} use theorem proving and the notion of certifying algorithms to verify  instances of computation with one specific STV algorithm (used in some union elections in Australia). They approach the problem similar to what  we do here. However, the underlying data structure and the algorithmic content which they formalise does not allow modular formalisation, verification and synthesis of various verifiers. It simply operates, however significantly efficiently, for merely one STV scheme where adapting it to other schemes requires considerable effort of re-encoding (sometimes the whole data structure) and expertise in dealing with HOL4 and CakeML. 
 
 
 There is however work on formalisation and verification of  algorithms for correctly computing election results, rather than checking correctness of computation performed, by relying on heavy height verification methods. We catalogue them according to the tool used in their work. 
 
-Some use the theorem prover Coq to formalise the algorithm, verify some properties about it. Then they employ the automatic program extraction of Coq to obtain Haskell or OCaml programs to provably compute election results based on the algorithm for any real input data to the program. These programs output verifiable evidence upon each execution. Some of them implement a verifier for independently scrutinising correctness of instances of computation carried out. However the verifier is not verified. They implement their verifiers as a Haskell program without formally demonstrating that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there are other unverified layers to trust in as well. For example  they rely on the GHC compiler to execute the program in the operating system. As GHC is not a verified compiler one has to trust the executable machine code also behaves correctly. 
+Some use the theorem prover Coq \cite{Ghale:2017:FVS,Ghale2018,DBLP:conf/ausai/PattinsonS15,
+DBLP:conf/itp/PattinsonT17,DBLP:conf/acsw/VerityP17} to formalise the algorithm, verify some properties about it. Then they employ the automatic program extraction of Coq to obtain Haskell or OCaml programs to provably compute election results based on the algorithm for any real input data to the program. These programs output verifiable evidence upon each execution. Some of them \cite{DBLP:conf/ausai/PattinsonS15,
+DBLP:conf/itp/PattinsonT17} implement a verifier for independently scrutinising correctness of instances of computation carried out. However the verifier is not verified. They implement their verifiers as a Haskell program without formally demonstrating that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there are other unverified layers to trust in as well. For example  they rely on the GHC compiler to execute the program in the operating system. As GHC is not a verified compiler one has to trust the executable machine code also behaves correctly. 
 
-Some work employ other theorem proving means such Celf or HOL4.  Schurmann and DeYoung who pioneered use of theorem proving in vote counting use Linear Logic to specify that semantics of a specific STV which is similar to Victoria STV except that it transfers votes of an eliminated candidate at once. Although the program obtained from the formalisation performs decently, reading their encoding is challenging due to complexity of Linear logic syntax. As the expressive power of Linear logic is limited compared to higher-order logic, their definition of the count action, for example, is comprised of eight auxiliary assertions which further complicates understandability of the encoding and therefore adaptability and usability of this approach. Dawson et al formalise Hare-Clark STV of Tasmania state in the theorem prover HOL4 and verify properties about the algorithm. They however manually transliterate their  HOL4 implementation into a ML compilable program. There are several issues with such an approach. For example, manual code translation is not a verified process and the semantics of the source (HOL4) and the target (ML) differ. Therefore verification established for the HOL4 implementation does not legitimately extend to the transliterated one.
+Schurmann and DeYoung \cite{DeYoung:2012:LLV} who pioneered use of theorem proving in vote counting use Delphin \cite{Dolphin} to specify, in syntax of Linear Logic \cite{DBLP:journals/apal/Girard93}, a specific STV scheme which is similar to Victoria STV except that it transfers votes of an eliminated candidate at once. Although the program obtained from the formalisation performs decently, reading their encoding is challenging due to complexity of Linear logic syntax. As the expressive power of Linear logic is limited compared to higher-order logic, their definition of the count action, for example, is comprised of eight auxiliary assertions which further complicates understandability of the encoding and therefore adaptability and usability of this approach. Dawson et al \cite{DBLP:conf/voteid/DawsonGM15}  formalise Hare-Clark STV of Tasmania state in the theorem prover HOL4 and verify properties about the algorithm. They however manually transliterate their  HOL4 implementation into a ML compilable program. There are several issues with such an approach. For example, manual code translation is not a verified process and the semantics of the source (HOL4) and the target (ML) differ. Therefore verification established for the HOL4 implementation does not legitimately extend to the transliterated one.
 %Ghale et al design a framework for modular formalisation and verification of STV algorithms in Coq. The current work discussed in this paper is orthogonal to the Coq framework as it deals with verification of the computation performed by the Haskell programs extracted from Coq using its  automatic program extraction. Moreover the framework developed in Coq cannot cover those STV algorithms that use random selection of surplus votes for transferring them such as the Senate STV of the New South Wales state in Australia. However, our framework here can perfectly be adjusted to verify executions of programs that compute based on such algorithms. Pattinson and Tiwari verify the Schulze Voting algorithm in Coq and use the extraction mechanisms of 
 \section{Conclusion}
+We introduced a framework for synthesise of provably trustworthy tools for transparent independent verification of computation carried out for computing winners of election which rely any STV  vote counting algorithm. Our work witnesses usability of formal methods, in particular theorem proving, as means for building software that is not only reliable and trustworthy but also efficient in meeting requirements of real world application.  
+
+%We minimised the trusted computing base by choosing HOL4+CakeML as our  means for developing the framework which allow synthesis of verified verifiers down to machine executable code. Therefore we come to This framework stands an an exemplary demonstration of usability of formal methods, in particular theorem proving, in building usable verified efficient software. 
 
 \begin{thebibliography}{00}
+\bibitem{MBlo}
+M.L. Blom, P. J. Stuckey, V. J. Teague, Computing the Margin of Victory in Preferential Parliamentary Elections, E-Vote-ID, 2018, pp.1--16
+\bibitem{cake} 
+CakeML: A Verified Implementation of ML, \url{https://cakeml.org/}
+\bibitem{DBLP:conf/voteid/DawsonGM15}
+J.E. Dawson, R. Gor{\'{e}}, T. Meumann, Machine-checked Reasoning about
+  Complex Voting Schemes Using Higher-order Logic, EVote-ID 2015, pp.142--158
+\bibitem{Dolphin}
+The Delphine Project, \url{http://delphin.poswolsky.com/home}
+\bibitem{DeYoung:2012:LLV}
+H. DeYoung, C. Sch{\"{u}}rmann, Linear Logical Voting Protocols, VoteID 2011, LNCS Springer, pp. 53--70
 \bibitem{Droop:1881:MER}
 H.R. Droop, On Methods of Electing Representatives. J. of the Statistical
   Society of London  44(2), 1881, pp.141--202
 \bibitem{DFar}
 D.M. Farrell, Electoral Systems: A Comparative Introduction, 2nd ed., New York: Palgrave Macmillan, 2011
-\bibitem{cake}
-R. Kumar, M.O. Myreen, M. Norrish, S. Owens, CakeML: A Verified
-  Implementation of ML, POPL, 2014
+\bibitem{Ghale:2017:FVS}
+M.K. Ghale, R. Gor{\'{e}}, D. Pattinson, A Formally Verified Single Transferable Voting Scheme with Fractional Values, E-Vote-ID 2017, pp.163--182
+\bibitem{Ghale2018}
+M.K. Ghale, R. Gor{\'{e}}, D. Pattinson, M. Tiwari,
+ Modular Formalisation and Verification of STV Algorithms, E-Vote-ID 2018, pp.51--66
+\bibitem{GhaleVSTTE}
+M.K. Ghale, D. Pattinson, R. Kumar, M. Norrish, Verified Certificate Checking for Counting Votes, VSTTE 2018, pp.69--87
+\bibitem{DBLP:journals/apal/Girard93}
+J. Girard, On the Unity of Logic. Ann. Pure Appl. Logic  59(3), 1993, pp.201--217
 \bibitem{hol}
-K. Slind, M. Norrish, A Brief Overview of HOL4, Theorem Proving in Higher Order Logics, Springer, 2008
+HOL Interactive Theorem Prover, https://hol-theorem-prover.org/
+\bibitem{CertAlg}
+R.M. Mcconnell, K. Mehlhorn, S. N\"{a}her, P. Schweitzer, Survey: Certifying Algorithms, J. Comput. Sci. Rev., vol5(2), 2011, pp.119--161
+\bibitem{DBLP:conf/ausai/PattinsonS15}
+D. Pattinson, C. Sch{\"{u}}rmann, Vote Counting as Mathematical Proof, 28th Australasian Joint
+  Conference 2015, pp.464--475
+\bibitem{DBLP:conf/itp/PattinsonT17}
+D. Pattinson, M. Tiwari, Schulze Voting as Evidence Carrying Computation, ITP 2017, pp.410--426
+\bibitem{DBLP:conf/acsw/VerityP17}
+F. Verity, D. Pattinson, Formally Verified Invariants of Vote Counting Schemes, ACSW 2017, pp.1--10 
+%\bibitem{cake1}
+%R. Kumar, M.O. Myreen, M. Norrish, S. Owens, CakeML: A Verified Implementation of ML, POPL, 2014
+%\bibitem{cake2}
+%M.O. Myreen, O. Scott: 
+%Proof-producing Translation of Higher-order Logic into Pure and Stateful ML. J. Funct. Program., 2014, pp.284-315
+%\bibitem{hol}
+%K. Slind, M. Norrish, A Brief Overview of HOL4, Theorem Proving in Higher Order Logics, Springer, 2008
 \end{thebibliography}
 \end{document}
 % vim: ft=tex
