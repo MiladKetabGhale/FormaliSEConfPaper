@@ -95,8 +95,7 @@ Michael.Norrish@data61.csiro.au}
 \maketitle
 \begin{abstract}
 Single transferrable vote (STV) is a family of preferential voting systems, different instances of which are used in binding elections throughout the world. We give a formal specification of this family, from which we derive fully verified tools that verify the computation for various instances of STV vote counting. These tools validate the probably correct execution of a run of a vote counting algorithm, based on a transcript of the count.
-
-Our framework distils the similarities and differences of various instances of STV and gives a uniform and modular way of synthesising verifiers for its various instances, and provides the flexibility and ease for adapting and extending it to a variety of STV schemes. We minimise the trusted base in correctness of the tools produced by using the HOL4 and CakeML as the technical basis. We first formally specify and verify the tools in HOL4 and then obtain the machine executable versions for the tools by relying on the verified proof translator and the compiler of the CakeML. Moreover, proofs that we establish in HOL4 and CakeML are almost completely automated so that new verified instances of STV can be created with no (or minimal) extra proof. Finally, our experimental results with executable code demonstrate feasibility of deploying the framework for verifying real size elections having an STV counting algorithm.
+ Our framework distils the similarities and differences of various instances of STV and gives a uniform and modular way of synthesising verifiers for its various instances, and provides the flexibility and ease for adapting and extending it to a variety of STV schemes. We minimise the trusted base in correctness of the tools produced by using the HOL4 and CakeML as the technical basis. We first formally specify and verify the tools in HOL4 and then obtain the machine executable versions for the tools by relying on the verified proof translator and the compiler of the CakeML. Moreover, proofs that we establish in HOL4 and CakeML are almost completely automated so that new verified instances of STV can be created with no (or minimal) extra proof. Finally, our experimental results with executable code demonstrate feasibility of deploying the framework for verifying real size elections having an STV counting algorithm.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -527,7 +526,7 @@ We also have another motivation for developing the auxiliary module through this
 \item As the abstract syntactic representation of evidence closely represents concrete evidences, designing the parser and inspecting  its  correctness is less challenging.  
  \item HOL4 has well developed libraries comprised of verified assertions of operations on list structure. By structuring the data on lists, we facilitate us and users  with exploitation of  already verified tools to formalise the framework and avoid inventing the unnecessary from the scratch. 
  \item HOL4 also has well-developed tactics for discharging proof obligations on assertions involving list structure and operations on it. We therefore come to provide us with means for ease of verification of the formalised assertions.
- \item Understanding the data structure used in the  framework implementation is critical for ease of  its usability and extensibility by third parties.  The type $\mathit{judgement}$ closely models concrete evidences such as the one in figure~\ref{EvInst}. Therefore one can sensibly perceive the  abstraction step taken for modelling  concrete data which in turn enhances understandability of the framework and its mechanism. 
+ \item Understanding the data structure used in the  framework implementation is critical for ease of  its usability and extensibility by third parties.  The type $\mathit{judgement}$ closely models concrete evidence such as figure~\ref{EvInst}. Therefore one can sensibly perceive the  abstraction step taken for modelling  concrete data which in turn enhances understandability of the framework and its mechanism. 
    \end{itemize}
 \begin{definition}\label{judgement}
 We formalise machine states as an inductive type  $\mathit{judgement}$ whose constructors are  $\mathit{NonFinal}$ and $\mathit{Final}$; 
@@ -542,9 +541,11 @@ We formalise machine states as an inductive type  $\mathit{judgement}$ whose con
  A $\mathit{Final~(w)}$ judgement declares $w$ as winners of the election. A  $\mathit{NonFinal~(ba,t,p,bl_{1},bl_{2},e,h)}$ judgement  consists of uncounted ballots $ba$, tally $t$, pile $p$, $bl_{1}$ the backlog of elected candidates, $bl_{2}$ the backlog of eliminated candidates, and $e$ and $h$ for the list of elected and continuing~(hopeful) candidates. The types  $\mathit{ballots}$, $\mathit{tallies}$ and $\mathit{piles}$ are respectively abbreviations for  $\mathit{((cand ~list)\times rat) list}$,   $\mathit{(cand\times rat)~list}$ and $\mathit{(cand\times(ballots~list)~list) ~list}$ where $\mathit{rat}$ is the HOL4 type of fractional numbers.
 \end{definition}
  Recall that objects whose type is $\mathit{piles}$ serve as containers for recording the ballots allocated to each candidate. Our choice for type of piles allows us to store the ballots received by each candidate in chunks of lists rather than one single list containing all of them.  We have two reasons for designing the type of piles as it stands instead of $\mathit{(cand\times(ballots~list))~list}$;  
-\paragraph*{(a)} Some STV schemes such as the lower house ACT and Tasmania STV, employ a nation called ''last parcel''. In short the last parcel of a candidate is the collection of those ballots received by the candidate at the last round of application of the count transition which made the tally of the candidate reach or exceed the quota and therefore be elected.  Only the last parcel, instead of all, of an elected candidate is then distributed the ballots received by the candidate. Also  they update the fractional transfer value, that each ballot in the last parcel  awaiting transfer carries, based on the length of the last parcel. To  accommodate this notion and its effect, we need identifying the ballots constituting the last parcel of an elected. We hence formalise the pile to record, for each  continuing candidate, a list consisting of lists of ballots each received upon  chronological applications of count transition.  Once a candidate is elected their pile may be manipulated differently from the continuing candidates. 
-\paragraph*{(b)} We noted earlier that the STV used for the upper house elections in the Victoria state transfers votes of an eliminated candidate chunk by chunk in several applications of transfer-removed, rather than in a single action, in order of the magnitude of the fractional value that the chunks carry. We therefore need to rearrange the pile of ballots of an eliminated candidate into lists based on equality of the fractional value of ballots and then distribute them in the proper order as the scheme requires. This means that the type of piles has to be as it is defined above.   
-Implementing piles in this way enables us to tailor the semantics of the transfer and elect transitions and their instantiations in such a way to modularly formalise several STV schemes which use the last parcel or stepwise distribution of votes form eliminated candidates or the combination of both. 
+\paragraph*{(a)} Some STV schemes such as  the ACT and Tasmania STV, employ a nation called ''last parcel''. In short the last parcel of a candidate is the collection of those ballots received at the last round of application of the count transition which made the tally of the candidate reach or exceed the quota and therefore be elected.  Only the last parcel, instead of all, of an elected candidate is then distributed the ballots received by the candidate. Also  they update the fractional transfer value, that each ballot in the last parcel  awaiting transfer carries, based on the length of the last parcel. To  accommodate this notion and its effect, we need identifying the ballots constituting the last parcel of an elected. We hence formalise the pile to record, for each  continuing candidate, a list consisting of lists of ballots each received upon  chronological applications of count transition.  Once a candidate is elected their pile may be manipulated differently from the continuing candidates. 
+\paragraph*{(b)} We noted earlier that the STV used for the upper house elections in the Victoria state transfers votes of an eliminated candidate chunk by chunk in several applications of transfer-removed, rather than in a single action, in order of the magnitude of the fractional value that the chunks carry. We therefore need to rearrange the pile of ballots of an eliminated candidate into lists based on equality of the fractional value of ballots and then distribute them in the proper order as the scheme requires. This means that the type of piles has to be as it is defined above. Implementing piles in this way enables
+% us to 
+tailoring the semantics of the transfer and elect transitions and their instantiations in such a way to modularly formalise several STV schemes which use the last parcel and/or stepwise distribution of votes from eliminated candidates. 
+%or the combination of both. 
 
 
 There is also a reason for choosing the type $rat$  
@@ -647,14 +648,15 @@ we obtain specification and computational implementation for other machine trans
 %formally prove that for 
 each transition implementation  matches with its specification.
 \begin{theorem}
-Assume $M^{spec} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \mathcal{T}} \rangle$ is the specification of the machine and  $M^{imp} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{dec})_{t \in \mathcal{T}} \rangle$ is its computational implementation. Then for any $t\in\mathcal{T}$,  $\mathcal{S}_{t}^{spec}\Leftrightarrow\mathcal{S}_{t}^{dec}$.      
+Assume $M^{spec} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \mathcal{T}} \rangle$ and $M^{imp} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{dec})_{t \in \mathcal{T}} \rangle$ are the specification and  implementation of the machine. Then  $\forall t\in\mathcal{T}$,  $\mathcal{S}_{t}^{spec}\Leftrightarrow\mathcal{S}_{t}^{dec}$.      
 \end{theorem}
 
 One can already proceed to synthesise an executable verifier from the machine. Such a verifier can correctly decide if given evidence $\omega$ claimed to have been produced by an algorithm whose counting scheme is STV, instead of e.g. PR list schemes or FPTP.  
 However we wish to generate verifiers that can recognise and validate according to which specific STV algorithm the evidence $\omega$ has been output. Hence we need to enrich the computational content of the machine semantics with more  pre- and post-conditions which are particular to individual STV schemes. We refer to this enrichment process as instantiation of the machine and discuss it further below.
 \section{Instantiations of the Machine}\label{sec:InstMachine}
 We exemplify how instantiation of the transfer-elected succeeds for transferring surplus of elected candidates based on the ACT STV
-\footnote{The Tasmania STV also uses similar surplus transfer mechanism.}. Instantiation of other machine transitions proceed in a  similar manner.    
+%\footnote{The Tasmania STV also uses similar surplus transfer mechanism.}. 
+Instantiation of other machine transitions proceed in a  similar manner.    
 Under section 'Step 3' and 'transfer surplus from elected candidates' the protocol explains under what conditions and how to distribute surplus votes. We summarise and rephrase these sections as follows. 
 \begin{itemize}
 \item[$\bullet_{1}$] no  candidate exceeds the quota
@@ -674,14 +676,14 @@ Under section 'Step 3' and 'transfer surplus from elected candidates' the protoc
 \;\;\;\;\;\;\HOLFreeVar{j\sb{\mathrm{1}}}\;\HOLSymConst{=}\;\HOLConst{NonFinal}\;(\HOLBoundVar{ba}\HOLSymConst{,}\HOLBoundVar{t}\HOLSymConst{,}\HOLBoundVar{p}\HOLSymConst{,}\HOLBoundVar{bl}\HOLSymConst{,}\HOLBoundVar{bl\sb{\mathrm{2}}}\HOLSymConst{,}\HOLBoundVar{e}\HOLSymConst{,}\HOLBoundVar{h})\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;\;\;\;\;\HOLConst{TransferAuxSpec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLBoundVar{ba}\;\HOLBoundVar{t}\;\HOLBoundVar{nt}\;\HOLBoundVar{p}\;\HOLBoundVar{np}\;\HOLBoundVar{bl}\;\HOLBoundVar{bl\sb{\mathrm{2}}}\;\HOLBoundVar{nbl\sb{\mathrm{2}}}\;\HOLBoundVar{e}\;\HOLBoundVar{ne}\;\HOLBoundVar{h}\\
 \;\;\;\;\;\;\;\;\HOLBoundVar{nh}\;\HOLSymConst{\HOLTokenConj{}}\;(\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{c\sp{\prime}}.\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c\sp{\prime}}\;\HOLBoundVar{h}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{x}.\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{x})\;\HOLBoundVar{t}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLBoundVar{x}\;\HOLSymConst{\HOLTokenLt{}}\;\HOLFreeVar{qu})\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\;\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{l\sp{\prime}}\;\HOLBoundVar{c}.\\
-\;\;\;\;\;\;\;\;\;\;(\HOLBoundVar{bl}\;\HOLSymConst{=}\;\HOLBoundVar{c}\HOLSymConst{::}\HOLBoundVar{l\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\;\;\;\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{l\sp{\prime}}\;\HOLBoundVar{c}.
+\;\;(\HOLBoundVar{bl}\;\HOLSymConst{=}\;\HOLBoundVar{c}\HOLSymConst{::}\HOLBoundVar{l\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;\;\;\;\;\;\;\;\;\;(\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{l\sp{\prime\prime}}.\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime\prime}})\;\HOLBoundVar{p}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLBoundVar{l\sp{\prime\prime}}\;\HOLSymConst{\HOLTokenNotEqual{}}\;\HOLConst{\ensuremath{[\,]}})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLBoundVar{nbl}\;\HOLSymConst{=}\;\HOLBoundVar{l\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;\;\;\;\;\;\;\;\;\;\HOLBoundVar{nba}\;\HOLSymConst{=}\;\HOLConst{last}\;(\HOLConst{get_cand_pile}\;\HOLBoundVar{c}\;\HOLBoundVar{p})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c}\HOLSymConst{,}\HOLConst{\ensuremath{[\,]}})\;\HOLBoundVar{np}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\;\;\;\;\;\;\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{d\sp{\prime}}.\\
-\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\HOLBoundVar{d\sp{\prime}}\;\HOLSymConst{\HOLTokenNotEqual{}}\;\HOLBoundVar{c}\;\HOLSymConst{\HOLTokenImp{}}\\
-\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{l\sp{\prime}}.\\
-\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;(\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{p}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{np})\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\;\;\;\;\;\;\;\;\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{d\sp{\prime}}.
+\;\HOLBoundVar{d\sp{\prime}}\;\HOLSymConst{\HOLTokenNotEqual{}}\;\HOLBoundVar{c}\;\HOLSymConst{\HOLTokenImp{}}
+\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{l\sp{\prime}}.
+\;\;(\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{p}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{np})\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;(\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{np}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{p}))\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;\;\;\;\;\;\;\;\;\HOLFreeVar{j\sb{\mathrm{2}}}\;\HOLSymConst{=}\;\HOLConst{NonFinal}\;(\HOLBoundVar{nba}\HOLSymConst{,}\HOLBoundVar{nt}\HOLSymConst{,}\HOLBoundVar{np}\HOLSymConst{,}\HOLBoundVar{nbl}\HOLSymConst{,}\HOLBoundVar{nbl\sb{\mathrm{2}}}\HOLSymConst{,}\HOLBoundVar{ne}\HOLSymConst{,}\HOLBoundVar{nh})
 \end{holthmenv}
@@ -698,8 +700,8 @@ For example, the function  get\textunderscore{}cand\textunderscore{}tally looks 
 Using this function, we implement another function less\textunderscore{}than\textunderscore{}quota which checks if the tally of every candidate in a given list $ls$ is below the quota (item $\bullet_{1}$).
 \begin{small}
 \begin{holthmenv}
- \HOLConst{less_than_quota}\;\HOLFreeVar{qu}\;\HOLFreeVar{l}\;\HOLFreeVar{ls}\;\HOLSymConst{\HOLTokenEquiv{}}\\
-\;\;\HOLConst{EVERY}\;(\HOLTokenLambda{}\HOLBoundVar{h}.\;\HOLConst{get_cand_tally}\;\HOLBoundVar{h}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenLt{}}\;\HOLFreeVar{qu})\;\HOLFreeVar{ls}
+ \HOLConst{less_than_quota}\;\HOLFreeVar{qu}\;\HOLFreeVar{l}\;\HOLFreeVar{ls}\\\;\HOLSymConst{\HOLTokenEquiv{}}
+\;\HOLConst{EVERY}\;(\HOLTokenLambda{}\HOLBoundVar{h}.\;\HOLConst{get_cand_tally}\;\HOLBoundVar{h}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenLt{}}\;\HOLFreeVar{qu})\;\HOLFreeVar{ls}
 \end{holthmenv}
 \end{small} 
 We show less\textunderscore{}than\textunderscore{}quota is a  computational realisation of  its specification: 
@@ -727,10 +729,10 @@ Moreover less\textunderscore{}than\textunderscore{}quota enforces its specificat
 \;\;dtcase\;\HOLFreeVar{bl}\;\HOLKeyword{of}\\
 \;\;\;\;\HOLConst{\ensuremath{[\,]}}\;\HOLTokenImp{}\;\HOLConst{false}\\
 \;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}\\
-\;\;\;\;(\HOLKeyword{let}\\
-\;\;\;\;\;\;\;\HOLBoundVar{gcp}\;=\;\HOLConst{get_cand_pile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p}\\
-\;\;\;\;\;\HOLKeyword{in}\\
-\;\;\;\;\;\;\;\HOLSymConst{\HOLTokenNeg{}}\HOLConst{null}\;\HOLBoundVar{gcp}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{hbl}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLBoundVar{tbl}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{last}\;\HOLBoundVar{gcp}\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\;\;(\HOLKeyword{let}
+\;\;\;\;\;\;\;\HOLBoundVar{gcp}\;=\;\HOLConst{get_cand_pile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p}
+\;\;\;\HOLKeyword{in}\\
+\;\;\;\;\HOLSymConst{\HOLTokenNeg{}}\HOLConst{null}\;\HOLBoundVar{gcp}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{hbl}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLBoundVar{tbl}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{last}\;\HOLBoundVar{gcp}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;\;\;\;\;\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{hbl}\HOLSymConst{,}\HOLConst{\ensuremath{[\,]}})\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{subpile1}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{subpile2}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{p})\\
 \HOLConst{TransferActDec}\;\HOLFreeVar{v\sb{\mathrm{0}}}\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{1}}})\;\HOLFreeVar{v\sb{\mathrm{2}}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
 \HOLConst{TransferActDec}\;\HOLFreeVar{v\sb{\mathrm{3}}}\;(\HOLConst{NonFinal}\;\HOLFreeVar{v\sb{\mathrm{9}}})\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{5}}})\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}
@@ -746,8 +748,6 @@ Legislature of Victoria's counting scheme does not strictly speak about the noti
 \item[$\bullet_{6'}$] transfer all of the surplus votes of an elected candidate at a reduced fraction.
 \item[$\bullet_{8'}$] the fractional transfer value is computed based on all of the surplus (not necessarily depending on the last parcel).
 \end{itemize} 
-
-Note that we deal with updating fractional transfer value in the semantics of elect transitions. Also in instantiations of the elect semantics, we guarantee elements of the backlog of elected candidates ($bl_{1}$) are all above the quota. Therefore we formalise Victoria's transfer-elect semantics as follows.
 \begin{small}
  \begin{holthmenv}
   \HOLConst{TransferVicDec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;(\HOLConst{NonFinal}\;(\HOLFreeVar{ba}\HOLSymConst{,}\HOLFreeVar{t}\HOLSymConst{,}\HOLFreeVar{p}\HOLSymConst{,}\HOLFreeVar{bl}\HOLSymConst{,}\HOLFreeVar{bl\sb{\mathrm{2}}}\HOLSymConst{,}\HOLFreeVar{e}\HOLSymConst{,}\HOLFreeVar{h}))\\
@@ -756,16 +756,18 @@ Note that we deal with updating fractional transfer value in the semantics of el
 \;\;\HOLConst{less_than_quota}\;\HOLFreeVar{qu}\;\HOLFreeVar{t}\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;dtcase\;\HOLFreeVar{bl}\;\HOLKeyword{of}\\
 \;\;\;\;\HOLConst{\ensuremath{[\,]}}\;\HOLTokenImp{}\;\HOLConst{false}\\
-\;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}\\
-\;\;\;\;(\HOLKeyword{let}\\
-\;\;\;\;\;\;\;\HOLBoundVar{gcp}\;=\;\HOLConst{get_cand_pile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p}\\
-\;\;\;\;\;\HOLKeyword{in}\\
+\;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}
+\;\;(\HOLKeyword{let}
+\;\;\HOLBoundVar{gcp}\;=\;\HOLConst{get_cand_pile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p}
+\;\;\;\HOLKeyword{in}\\
 \;\;\;\;\;\;\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLBoundVar{tbl}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLSymConst{\HOLTokenNeg{}}\HOLConst{null}\;\HOLBoundVar{gcp}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{flat}\;\HOLBoundVar{gcp}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{hbl}\HOLSymConst{,}\HOLConst{\ensuremath{[\,]}})\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;\;\;\;\;\;\HOLConst{subpile1}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{subpile2}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{p})\\
 \HOLConst{TransferVicDec}\;\HOLFreeVar{v\sb{\mathrm{0}}}\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{1}}})\;\HOLFreeVar{v\sb{\mathrm{2}}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
 \HOLConst{TransferVicDec}\;\HOLFreeVar{v\sb{\mathrm{3}}}\;(\HOLConst{NonFinal}\;\HOLFreeVar{v\sb{\mathrm{9}}})\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{5}}})\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}
 \end{holthmenv}
 \end{small}
+Note that we deal with updating fractional transfer value in the semantics of elect transitions. Also in instantiations of the elect semantics, we guarantee elements of the backlog of elected candidates ($bl_{1}$) are all above the quota. Therefore we formalise Victoria's transfer-elect semantics as above.
+
 \subsubsection{CADE STV}
 This scheme is radically different than ``standard'' STV algorithms. In particular, to the best of our knowledge, every ``normal'' STV algorithm at least respects $\bullet_{1}$. However CADE violates not only this condition but also all of the ACT's transfer-elect semantics components except $\bullet_{2}$. This unorthodox behaviour of CADE permeates to the semantics of other transitions as well to an extent where the algorithm is sometimes questioned to be a true member  of the STV family. But our framework flexibly  accommodates even the extraordinary ones. We catalogue CADE's transfer-elect informal semantics  conditions as follows.
 \begin{itemize}
@@ -788,8 +790,8 @@ The clause $\star_{4}$ itself consists of the following sub-clauses.
 \;\;\HOLConst{TransferAuxDec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLFreeVar{ba}\;\HOLFreeVar{t}\;\HOLFreeVar{t\sp{\prime}}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{bl}\;\HOLFreeVar{bl\sb{\mathrm{2}}}\;\HOLFreeVar{bl\sb{\mathrm{2}}\sp{\prime}}\;\HOLFreeVar{e}\;\HOLFreeVar{e\sp{\prime}}\;\HOLFreeVar{h}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;dtcase\;\HOLFreeVar{bl}\;\HOLKeyword{of}\\
 \;\;\;\;\HOLConst{\ensuremath{[\,]}}\;\HOLTokenImp{}\;\HOLConst{false}\\
-\;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}\\
-\;\;\;\;\HOLBoundVar{tbl}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{APPEND_ALL}\;\HOLFreeVar{p}\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}
+\;\;\HOLBoundVar{tbl}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{APPEND_ALL}\;\HOLFreeVar{p}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;\;\;\HOLSymConst{\HOLTokenNeg{}}\HOLConst{null}\;(\HOLConst{get_cand_pile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{ALL_EMPTY}\;\HOLFreeVar{l}\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{=}\;\HOLFreeVar{l}\\
 \HOLConst{TransferCadeDec}\;\HOLFreeVar{v\sb{\mathrm{0}}}\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{1}}})\;\HOLFreeVar{v\sb{\mathrm{2}}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
 \HOLConst{TransferCadeDec}\;\HOLFreeVar{v\sb{\mathrm{3}}}\;(\HOLConst{NonFinal}\;\HOLFreeVar{v\sb{\mathrm{9}}})\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{5}}})\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}
@@ -854,18 +856,18 @@ Then we implement the function valid\textunderscore{}judgements\textunderscore{}
 \HOLConst{valid_judgements_dec}\;\HOLFreeVar{v\sb{\mathrm{1}}}\;[\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{2}}}]\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{true}\\
 \HOLConst{valid_judgements_dec}\;\HOLFreeVar{v\sb{\mathrm{3}}}\;[\HOLConst{NonFinal}\;\HOLFreeVar{v\sb{\mathrm{10}}}]\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
 \HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{j\sb{\mathrm{0}}}\HOLSymConst{::}\HOLFreeVar{j\sb{\mathrm{1}}}\HOLSymConst{::}\HOLFreeVar{js})\;\HOLSymConst{\HOLTokenEquiv{}}\\
-\;\;\HOLConst{Valid_Step}\;\HOLFreeVar{params}\;\HOLFreeVar{j\sb{\mathrm{0}}}\;\HOLFreeVar{j\sb{\mathrm{1}}}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{j\sb{\mathrm{1}}}\HOLSymConst{::}\HOLFreeVar{js})
+\;\HOLConst{Valid_Step}\;\HOLFreeVar{params}\;\HOLFreeVar{j\sb{\mathrm{0}}}\;\HOLFreeVar{j\sb{\mathrm{1}}}\;\HOLSymConst{\HOLTokenConj{}}
+\;\HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{j\sb{\mathrm{1}}}\HOLSymConst{::}\HOLFreeVar{js})
 \end{holthmenv}
 \end{small} 
 The verifier in HOL4 is eventually defined a follows where the function initial\textunderscore{}Judgement\textunderscore{}dec decides if the first element of input evidence is a machine state correctly recording data of the initial state of tallying votes where no one has yet attracted any vote, the backlogs of elected and eliminated and the list of elected are all empty and every candidate is continuing. 
 \begin{small}
  \begin{holthmenv}
   \HOLConst{Check_Parsed_Certificate}\;\HOLFreeVar{params}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
-\HOLConst{Check_Parsed_Certificate}\;\HOLFreeVar{params}\\
-\;\;(\HOLFreeVar{first\HOLTokenUnderscore{}judgement}\HOLSymConst{::}\HOLFreeVar{rest\HOLTokenUnderscore{}judgements})\;\HOLSymConst{\HOLTokenEquiv{}}\\
-\;\;\HOLConst{Initial_Judgement_dec}\;(\HOLConst{snd}\;(\HOLConst{snd}\;\HOLFreeVar{params}))\;\HOLFreeVar{first\HOLTokenUnderscore{}judgement}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{first\HOLTokenUnderscore{}judgement}\HOLSymConst{::}\HOLFreeVar{rest\HOLTokenUnderscore{}judgements})
+\HOLConst{Check_Parsed_Certificate}\;\HOLFreeVar{params}
+\;\;(\HOLFreeVar{state}\HOLSymConst{::}\HOLFreeVar{rest\HOLTokenUnderscore{}states})\;\HOLSymConst{\HOLTokenEquiv{}}\\
+\;\;\HOLConst{Initial_Judgement_dec}\;(\HOLConst{snd}\;(\HOLConst{snd}\;\HOLFreeVar{params}))\;\HOLFreeVar{first\HOLTokenUnderscore{}state}\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{state}\HOLSymConst{::}\HOLFreeVar{rest\HOLTokenUnderscore{}states})
 \end{holthmenv}
 \end{small} 
 One can use Check\textunderscore{}Parsed\textunderscore{}Certificate to run small sample elections manually encoded in HOL4's environment. However real evidence such as figure~\ref{EvInst} are stored in a file in an operating system which need to be read, parsed, and processed for validation. Therefore we need an executable verifier in an operating system's environment. On the other hand, Check\textunderscore{}Parsed\textunderscore{}Certificate despite its infeasibility for computation, is proven to behave correctly as the specification $\mathcal{V}_{spec}$ expects. How can we synthesise from it an executable verifier $\mathcal{V}$ that is both efficient for actual computation and provably correct with respect to $\mathcal{V}_{spec}$ and thus trustworthy? To this end, we invoke the verified CakeML's proof translator tool, its ecosystem and the compiler.
@@ -877,7 +879,9 @@ Using the verified CakeML's translator we obtain a translated version of the ver
  
 \section{Experimental Results}
 
-Figure~\ref{ParamACT} illustrates the lower house election electorates of the ACT state of Australia with the size of their respective input valid ballots and parameters (seats and candidates) for the elections held in years 2008 and 2012. Figure~\ref{EvACT} shows some of the experimental results performed on real historical data of these districts. For each election, we obtain evidence  by executing a Haskell program\footnote{Source code at \url{https://github.com/MiladKetabGhale/Modular_Checker}} computing winners of each election  according to ACT STV. Then the verifier synthesised for validating instances of computation with the ACT STV verifies each evidence as valid\footnote{Using one processor of an Intel Core i7-7500U CPU\@ 2.70 GHz$\times$4}. Note that certifying evidence  validity is costlier than detecting the invalidity of evidence of the same size, because the former takes parsing  \emph{all} lines and verifying \emph{every} transition  while the latter does not. 
+Figure~\ref{ParamACT} illustrates the lower house election electorates of the ACT state of Australia with the size of their respective input valid ballots and parameters (seats and candidates) for the elections held in years 2008 and 2012. Figure~\ref{EvACT} shows some of the experimental results performed on real historical data of these districts. For each election, we obtain evidence  by executing a Haskell program\footnote{Source code at \url{https://github.com/MiladKetabGhale/Modular_Checker}} computing winners of each election  according to ACT STV. Then the verifier synthesised for 
+%validating instances of computation with the
+ ACT STV verifies each evidence as valid\footnote{Using one processor of an Intel Core i7-7500U CPU\@ 2.70 GHz$\times$4}. Note that certifying evidence  validity is costlier than detecting the invalidity of evidence of the same size, because the former takes parsing  \emph{all} lines and verifying \emph{every} transition  while the latter does not. 
 %is detected before the verifier processes the whole evidence. 
 %because for the former  \emph{every}  transition has to be verified while the latter  is detected before the verifier processes the whole evidence. 
 \begin{figure}[t]
@@ -894,7 +898,7 @@ Ginnindra&66076&27&5&2012\\
 Molonglo&88266&40&7&2008\\
 \hline
 \end{tabular}
-\end{small} 
+\end{small}
 \caption{Parameters of the ACT Lower house elections 2008/2012} 
 \label{ParamACT}
 \end{figure}
@@ -912,102 +916,59 @@ Ginnindra&72.7&1789&2012\\
 Molonglo&195.6&12063&2008\\
 \hline
 \end{tabular}
-\end{small} 
+\end{small}
 \caption{Evidence Validation for the ACT Lower house elections 2008/2012}
 \label{EvACT} 
 \end{figure}
-Contrary to the folklore that theorem provers are basically meant for verification, rather than efficient computation, the generated verifier for ACT STV performs great. For example, Molonglo electorate is the biggest electoral district among the lower elections in terms of the constituency magnitude and vacancies. Despite  costly computation for meticulously examining correctness of every small detail in the evidence, the verifier validates it in about three hours. Considering the typical time lapse in publicly announcing real election results, this performance is reasonably outstanding.  
+Contrary to the folklore that theorem provers are basically meant for verification, rather than efficient computation, the generated verifier for ACT STV performs great. For example, Molonglo electorate is the biggest electoral district among the lower house electorates in terms of the constituency magnitude and vacancies. Despite  costly computation for meticulously examining correctness of every small detail in the evidence, the verifier validates it in about three hours. Considering the typical time lapse in publicly announcing real election results, this performance is reasonably outstanding.  
 \section{Related Work}
-<<<<<<< HEAD
-Use of theorem proving for verifying vote counting algorithms or their computation is an emerging field. There is much expected to yet appear in future. Especially to our best knowledge only Ghale et al \cite{GhaleVSTTE} use theorem proving and the notion of certifying algorithms to verify  instances of computation with one specific STV algorithm (used in some union elections in Australia). They approach the problem similar to what  we do here. However, the underlying data structure and the algorithmic content which they formalise does not allow modular formalisation, verification and synthesis of various verifiers. It simply operates, however significantly efficiently, for merely one STV scheme where adapting it to other schemes requires considerable effort of re-encoding (sometimes the whole data structure) and expertise in dealing with HOL4 and CakeML. 
 
-
-There is however work on formalisation and verification of  algorithms for correctly computing election results, rather than checking correctness of computation performed, by relying on heavy height verification methods. We catalogue them according to the tool used in their work. 
-
-Some use the theorem prover Coq \cite{Ghale:2017:FVS,Ghale2018,DBLP:conf/ausai/PattinsonS15,
-DBLP:conf/itp/PattinsonT17,DBLP:conf/acsw/VerityP17} to formalise the algorithm, verify some properties about it. Then they employ the automatic program extraction of Coq to obtain Haskell or OCaml programs to provably compute election results based on the algorithm for any real input data to the program. These programs output verifiable evidence upon each execution. Some of them \cite{DBLP:conf/ausai/PattinsonS15,
-DBLP:conf/itp/PattinsonT17} implement a verifier for independently scrutinising correctness of instances of computation carried out. However the verifier is not verified. They implement their verifiers as a Haskell program without formally demonstrating that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there are other unverified layers to trust in as well. For example  they rely on the GHC compiler to execute the program in the operating system. As GHC is not a verified compiler one has to trust the executable machine code also behaves correctly. 
-
-Schurmann and DeYoung \cite{DeYoung:2012:LLV} who pioneered use of theorem proving in vote counting use Delphin \cite{Dolphin} to specify, in syntax of Linear Logic \cite{DBLP:journals/apal/Girard93}, a specific STV scheme which is similar to Victoria STV except that it transfers votes of an eliminated candidate at once. Although the program obtained from the formalisation performs decently, reading their encoding is challenging due to complexity of Linear logic syntax. As the expressive power of Linear logic is limited compared to higher-order logic, their definition of the count action, for example, is comprised of eight auxiliary assertions which further complicates understandability of the encoding and therefore adaptability and usability of this approach. Dawson et al \cite{DBLP:conf/voteid/DawsonGM15}  formalise Hare-Clark STV of Tasmania state in the theorem prover HOL4 and verify properties about the algorithm. They however manually transliterate their  HOL4 implementation into a ML compilable program. There are several issues with such an approach. For example, manual code translation is not a verified process and the semantics of the source (HOL4) and the target (ML) differ. Therefore verification established for the HOL4 implementation does not legitimately extend to the transliterated one.
-%Ghale et al design a framework for modular formalisation and verification of STV algorithms in Coq. The current work discussed in this paper is orthogonal to the Coq framework as it deals with verification of the computation performed by the Haskell programs extracted from Coq using its  automatic program extraction. Moreover the framework developed in Coq cannot cover those STV algorithms that use random selection of surplus votes for transferring them such as the Senate STV of the New South Wales state in Australia. However, our framework here can perfectly be adjusted to verify executions of programs that compute based on such algorithms. Pattinson and Tiwari verify the Schulze Voting algorithm in Coq and use the extraction mechanisms of 
-=======
 Use of theorem proving to verify vote counting in elections
-is an emerging field. The only use of theorem proving and certifying
-algorithms that we are aware is our own previous work \footnote{DP:
-Reference} which just verifies a single instance of STV. 
-While the overall approach is similar, 
-the underlying data
-structure and the algorithmic content which is being formalised does not
-allow modular specification, verification and synthesis of 
-verifiers for different types of STV: only a single STV algorithm is
-being verified. 
-Adapting to other schemes
-requires considerable effort of re-encoding (sometimes the whole
-data structure) and non-trivial expertise with HOL4 and CakeML. 
+is an emerging field. The only use of theorem proving and certifying algorithms that we are aware is our own previous work \cite{GhaleVSTTE} which just verifies a single instance of STV.  While the overall approach is similar, 
+the underlying data structure and the algorithmic content which is being formalised does not allow modular specification, verification and synthesis of 
+verifiers for different types of STV: only a single STV algorithm is being verified.  Adapting to other schemes
+requires considerable effort of re-encoding (sometimes the whole data structure) and non-trivial expertise with HOL4 and CakeML
 
+Other approaches focus on the  formalisation and verification of algorithms for correctly computing election results, rather than checking correctness of computation performed. This is usually based on the theorem proving method.
+%so-called heavy weight formal methods which use various interactive theorem provers.
+% and uses a variety of different tools. 
 
-Other approaches focus on the 
-formalisation and verification of
-algorithms for correctly computing election results, rather than
-checking correctness of computation performed. This is usually based
-on so-called heavy weight formal methods (interactive theorem
-proving) and uses a variety of different tools. 
+There is work which formally verify some STV algorithms in the theorem prover Coq. Ghale et al \cite{Ghale:2017:FVS} formalise the student union STV algorithm used in some union elections in Australia. Pattinson and Schurmann \cite{DBLP:conf/ausai/PattinsonS15}  verify the ``vanilla'' STV algorithm.   Pattinson and Tiwari \cite{DBLP:conf/itp/PattinsonT17} prove the Schultz voting scheme correct, and finally Verity and Pattinson verify \cite{DBLP:conf/acsw/VerityP17} an invariant of STV. Ghale et al \cite{Ghale2018} provide a modular treatment of formalisation and verification of STV algorithms. 
+ %\cite{Ghale:2017:FVS,Ghale2018,DBLP:conf/ausai/PattinsonS15, DBLP:conf/itp/PattinsonT17,DBLP:conf/acsw/VerityP17} 
+%to formalise the algorithm, verify some properties about it. 
+They all then employ the automatic program extraction of Coq to obtain Haskell or OCaml programs to provably compute election results based on the algorithm for any real input data. These programs output verifiable evidence upon each execution. Some of them \cite{DBLP:conf/ausai/PattinsonS15,
+DBLP:conf/itp/PattinsonT17} implement a verifier for checking correctness of execution instances. However the verifier is not verified. They implement their verifiers as  Haskell programs without proving that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there remain other unverified layers to trust in. For example  they rely on the GHC compiler to execute the program in the operating system. As GHC is not a verified compiler one has to trust the executable machine code also behaves correctly. 
+%<Name of first author> et. al. \footnote{DP: reference} use the Coq theorem prover to formalise the algorithm\footnote{DP: which?} and  verify
+%some of its properties. Then they employ the automatic program extraction of Coq to obtain Haskell or OCaml programs to provably compute election results based on the algorithm for any real input data to the program. These programs output verifiable evidence upon each execution. <Name of first author> et. al. \footnote{DP:
+%reference} implement a verifier for independently
+%scrutinising correctness of instances of computation carried out. However the verifier itself is not verified. Verifiers are implemented as a Haskell program without formally demonstrating that the
+%verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there are other unverified layers to trust in as well. For example  they rely on the GHC compiler to execute the
+%program in the operating system. As GHC is not a verified compiler one has to trust the executable machine code also behaves correctly. 
 
-<Name of first author> et. al. \footnote{DP: reference} use the Coq
-theorem prover to formalise the algorithm\footnote{DP: which?} and  verify
-some of its properties. Then they employ the automatic program
-extraction of Coq to obtain Haskell or OCaml programs to provably
-compute election results based on the algorithm for any real input
-data to the program. These programs output verifiable evidence upon
-each execution. <Name of first author> et. al. \footnote{DP:
-reference} implement a verifier for independently
-scrutinising correctness of instances of computation carried out.
-However the verifier itself is not verified. Verifiers are
-implemented
-as a Haskell program without formally demonstrating that the
-verifier itself computes correctly. Moreover, even trusting that the
-verifier is reliable, there are other unverified layers to trust in
-as well. For example  they rely on the GHC compiler to execute the
-program in the operating system. As GHC is not a verified compiler
-one has to trust the executable machine code also behaves correctly. 
-
-Others employ other theorem proving means such Celf or HOL4.
-Schurmann and DeYoung \footnote{DP: reference}
+Others employ other theorem proving means such Delpin \cite{Dolphin} or HOL4.
+Schurmann and DeYoung \cite{DeYoung:2012:LLV}
 have pioneered the use of theorem proving in vote
-counting and use Linear Logic to specify that semantics of a specific
-STV which is similar to Victoria STV except that it transfers votes
-of an eliminated candidate at once. Although the program obtained
-from the formalisation performs decently, reading their encoding is
-challenging due to complexity of Linear logic syntax. As the
-expressive power of Linear logic is limited compared to higher-order
-logic, their definition of the count action, for example, uses
-eight auxiliary assertions which further complicates
+counting and use Linear Logic \cite{DBLP:journals/apal/Girard93} to specify that semantics of a specific STV which is similar to Victoria STV except that it transfers votes of an eliminated candidate at once. Although the program obtained from the formalisation performs decently, reading their encoding is challenging due to complexity of Linear logic syntax. As the expressive power of Linear logic is limited compared to higher-order
+logic, their definition of the count action, for example, uses eight auxiliary assertions which further complicates
 the encoding and therefore both adaptability and
-usability of this approach. 
-Dawson et al \footnote{DP: reference} formalise Hare-Clark STV of
-Tasmania state in the theorem prover HOL4 and verify properties
-about the algorithm. They however manually transliterate their  HOL4
+usability of this approach.  Dawson et al \cite{DBLP:conf/voteid/DawsonGM15} formalise the Tasmania STV in the theorem prover HOL4 and verify properties about the algorithm. They however manually transliterate their  HOL4
 implementation into a ML program. There are several
-issues with such an approach. For example, manual code translation
-is not a verified process and the semantics of the source (HOL4) and
-the target (ML) differ. Therefore verification established for the
-HOL4 implementation does not provably extend to the
-transliterated one.
-%Ghale et al design a framework for modular formalisation and
-%verification of STV algorithms in Coq. The current work discussed
-%in this paper is orthogonal to the Coq framework as it deals with
-%verification of the computation performed by the Haskell programs
-%extracted from Coq using its  automatic program extraction.
-%Moreover the framework developed in Coq cannot cover those STV
-%algorithms that use random selection of surplus votes for
-%transferring them such as the Senate STV of the New South Wales
-%state in Australia. However, our framework here can perfectly be
-%adjusted to verify executions of programs that compute based on
-%such algorithms. Pattinson and Tiwari verify the Schulze Voting
-%algorithm in Coq and use the extraction mechanisms of 
->>>>>>> d7516d730178e2b95458a36ed5a4275fe11990cb
+issues with such an approach. For example, manual code translation is not a verified process and the semantics of the source (HOL4) and the target (ML) differ. Hence verification established for the HOL4 implementation does not provably extend to the transliterated one.
+
+
+
+%Use of theorem proving for verifying vote counting algorithms or their computation is an emerging field. There is much expected to yet appear in future. Especially to our best knowledge only Ghale et al \cite{GhaleVSTTE} use theorem proving and the notion of certifying algorithms to verify  instances of computation with one specific STV algorithm (used in some union elections in Australia). They approach the problem similar to what  we do here. However, the underlying data structure and the algorithmic content which they formalise does not allow modular formalisation, verification and synthesis of various verifiers. It simply operates, however significantly efficiently, for merely one STV scheme where adapting it to other schemes requires considerable effort of re-encoding (sometimes the whole data structure) and expertise in dealing with HOL4 and CakeML. 
+%%%%There is however work on formalisation and verification of  algorithms for correctly computing election results, rather than checking correctness of computation performed, by relying on heavy height verification methods. We catalogue them according to the tool used in their work. 
+
+
+
+%Schurmann and DeYoung \cite{DeYoung:2012:LLV} who pioneered use of theorem proving in vote counting use Delphin \cite{Dolphin} to specify, in syntax of Linear Logic \cite{DBLP:journals/apal/Girard93}, a specific STV scheme which is similar to Victoria STV except that it transfers votes of an eliminated candidate at once. Although the program obtained from the formalisation performs decently, reading their encoding is challenging due to complexity of Linear logic syntax. As the expressive power of Linear logic is limited compared to higher-order logic, their definition of the count action, for example, is comprised of eight auxiliary assertions which further complicates understandability of the encoding and therefore adaptability and usability of this approach. Dawson et al \cite{DBLP:conf/voteid/DawsonGM15}  formalise Hare-Clark STV of Tasmania state in the theorem prover HOL4 and verify properties about the algorithm. They however manually transliterate their  HOL4 implementation into a ML compilable program. There are several issues with such an approach. For example, manual code translation is not a verified process and the semantics of the source (HOL4) and the target (ML) differ. Therefore verification established for the HOL4 implementation does not legitimately extend to the transliterated one.
+%Ghale et al design a framework for modular formalisation and verification of STV algorithms in Coq. The current work discussed in this paper is orthogonal to the Coq framework as it deals with verification of the computation performed by the Haskell programs extracted from Coq using its  automatic program extraction. Moreover the framework developed in Coq cannot cover those STV algorithms that use random selection of surplus votes for transferring them such as the Senate STV of the New South Wales state in Australia. However, our framework here can perfectly be adjusted to verify executions of programs that compute based on such algorithms. Pattinson and Tiwari verify the Schulze Voting algorithm in Coq and use the extraction mechanisms of 
 \section{Conclusion}
-We introduced a framework for synthesise of provably trustworthy tools for transparent independent verification of computation carried out for computing winners of election which rely any STV  vote counting algorithm. Our work witnesses usability of formal methods, in particular theorem proving, as means for building software that is not only reliable and trustworthy but also efficient in meeting requirements of real world application.  
+We introduced a framework for synthesise of provably trustworthy tools for transparent independent verification of computation with any STV algorithm.  
+%carried out for computing winners of election which rely on any STV algorithm. 
+Our work witnesses usability of formal methods, in particular theorem proving, as means for building software that is both correct and efficient. 
+%not only reliable and trustworthy but also efficient in meeting requirements of real world application.  
 
 %We minimised the trusted computing base by choosing HOL4+CakeML as our  means for developing the framework which allow synthesis of verified verifiers down to machine executable code. Therefore we come to This framework stands an an exemplary demonstration of usability of formal methods, in particular theorem proving, in building usable verified efficient software. 
 
@@ -1018,7 +979,7 @@ M.L. Blom, P. J. Stuckey, V. J. Teague, Computing the Margin of Victory in Prefe
 CakeML: A Verified Implementation of ML, \url{https://cakeml.org/}
 \bibitem{DBLP:conf/voteid/DawsonGM15}
 J.E. Dawson, R. Gor{\'{e}}, T. Meumann, Machine-checked Reasoning about
-  Complex Voting Schemes Using Higher-order Logic, EVote-ID 2015, pp.142--158
+  Complex Voting Schemes Using Higher-order Logic, EVote-ID 2015
 \bibitem{Dolphin}
 The Delphine Project, \url{http://delphin.poswolsky.com/home}
 \bibitem{DeYoung:2012:LLV}
@@ -1029,14 +990,14 @@ H.R. Droop, On Methods of Electing Representatives. J. of the Statistical
 \bibitem{DFar}
 D.M. Farrell, Electoral Systems: A Comparative Introduction, 2nd ed., New York: Palgrave Macmillan, 2011
 \bibitem{Ghale:2017:FVS}
-M.K. Ghale, R. Gor{\'{e}}, D. Pattinson, A Formally Verified Single Transferable Voting Scheme with Fractional Values, E-Vote-ID 2017, pp.163--182
+M.K. Ghale, R. Gor{\'{e}}, D. Pattinson, A Formally Verified Single Transferable Voting Scheme with Fractional Values, E-Vote-ID 2017
 \bibitem{Ghale2018}
 M.K. Ghale, R. Gor{\'{e}}, D. Pattinson, M. Tiwari,
  Modular Formalisation and Verification of STV Algorithms, E-Vote-ID 2018, pp.51--66
 \bibitem{GhaleVSTTE}
 M.K. Ghale, D. Pattinson, R. Kumar, M. Norrish, Verified Certificate Checking for Counting Votes, VSTTE 2018, pp.69--87
 \bibitem{DBLP:journals/apal/Girard93}
-J. Girard, On the Unity of Logic. Ann. Pure Appl. Logic  59(3), 1993, pp.201--217
+J. Girard, On the Unity of Logic. Ann. Pure Appl. Logic  59(3), 1993
 \bibitem{hol}
 HOL Interactive Theorem Prover, https://hol-theorem-prover.org/
 \bibitem{CertAlg}
