@@ -177,8 +177,8 @@ automatically:  almost all of the ensuing proof obligations are discharged gener
 
 We evaluate our framework by analysing the degree of automation and modularity achieved, and by giving realistic benchmarks results over real-world election data.
 
-In summary, we present a framework that allows us to formally specify instances of STV and sythesise an executable certificate verifier in a modular way that is itself verified down to the machine level.
-\section{Evidences}
+In summary, we present a framework that allows us to formally specify instances of STV and synthesise an executable evidence verifier in a modular way that is itself verified down to the machine level.
+\section{Evidence}
 \label{sec:DataEv}
   
 We are motivated to 
@@ -242,28 +242,28 @@ In a secondary examination of the STV family, we also identify a general algorit
 \caption{Generic STV Counting Steps}
 \label{GenSteps}
 \end{figure}
-Each action is constituted of  pre-conditions on when and how the action comes into effect, and post-conditions dictating what effect applying the action brings about by describing the new state to which computation proceeds. In fact, these conditions are the formal counterparts of the legal clauses in the textual specification of the counting scheme which tell tally officers how to proceed with tallying, and they are common between all flavours of STV. 
+Each action is constituted of  pre-conditions on when and how the action comes into effect, and postconditions dictating what effect applying the action brings about by describing the new state to which computation proceeds. In fact, these conditions are the formal counterparts of the legal clauses in the textual specification of the counting scheme which tell tally officers how to proceed with tallying, and they are common between all flavours of STV. 
 
-For example a constant pre-condition for applying elimination  asserts that there must be no uncounted ballot left and another one declares that no candidate should be electable at the current state of counting. A post-condition of elimination is that once a candidate is excluded from counting, the list of continuing candidates is updated accordingly so that the excluded candidate no longer received votes. Conjunctions of such declarations comprise what an action is and what an application of that action means.
+For example a constant pre-condition for applying elimination  asserts that there must be no uncounted ballot left and another one declares that no candidate should be electable at the current state of counting. A postcondition of elimination is that once a candidate is excluded from counting, the list of continuing candidates is updated accordingly so that the excluded candidate no longer received votes. Conjunctions of such declarations comprise what an action is and what an application of that action means.
 
 
-The underlying abstract data type and the universal algorithmic pattern found in STV characterise components of a finite state machine which we call \emph{generic STV}~(Definition\ref{STVMachine}). The set of machine states consist of the discrete states of computation $\mathcal{S}$ mentioned earlier. The seven generic actions form the transition labels $\mathcal{T}$ of the machine. Last, the everywhere present pre- and post-conditions which define (content of)  the actions, make a small-step operational semantics for the machine.  
+The underlying abstract data type and the universal algorithmic pattern found in STV characterise components of a finite state machine which we call \emph{generic STV}~(Definition\ref{STVMachine}). The set of machine states consist of the discrete states of computation $\mathcal{S}$ mentioned earlier. The seven generic actions form the transition labels $\mathcal{T}$ of the machine. Last, the everywhere present pre- and postconditions which define (content of)  the actions, make a small-step operational semantics for the machine.  
 Note that the states of computation recorded in all possible  evidence now become identical with machine states.
 
 
 \begin{definition}[The generic STV machine]\label{STVMachine}
 Let $\mathcal{S}$  and $\mathcal{T}$
-be respectively the set of machine states and transition labels.  Also assume for $t\in\mathcal{T}$, $S_{t}$ $=$ $\bigwedge_{\atop{i\leq j_{t}}} \psi_{i}$ where  $\psi_{i}$ is the formal specification (in higher-order logic) of a pre- or post-condition of $t$. Then \emph{generic STV} is the triple $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$.  
+be respectively the set of machine states and transition labels.  Also assume for $t\in\mathcal{T}$, $S_{t}$ $=$ $\bigwedge_{\atop{i\leq j_{t}}} \psi_{i}$ where  $\psi_{i}$ is the formal specification (in higher-order logic) of a pre- or postcondition of $t$. Then \emph{generic STV} is the triple $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$.  
 \end{definition}
 There are nonetheless variations in STV algorithms  which we  recognise  by separate \emph{instantiations} into the machine.  
 \subsection{Instantiations of the Machine with Specific STV schemes}
 Differences exist between counting algorithms of STV schemes.  
- For example in the STV used for electing the upper house representatives of the Victoria state of Australia (Victoria STV), distributing votes of an eliminated candidate occurs step by step in order of the magnitude of the fractional values that those votes carry.  Consequently, a pre-condition for applying the action is to first assure that upon each instance of applying transfer-removed action (a) exactly those votes which have the same fractional value are transferred and (b) the transfer happens according to the magnitude order. In contrast, for example, the STV used in the lower house elections of Tasmania state of Australia (Tasmania STV) does not have such pre-condition simply because votes of an eliminated candidate are transferred in a single application of transfer-removed. There are also variations in post-conditions. For example transfer-elect of the ACT STV used in the lower house elections of the ACT state of Australia requires distributing only the last parcel of surplus votes received by an elected candidate. But Victoria STV specifies transferring all surplus votes of an elected candidate.  
+ For example in the STV used for electing the upper house representatives of the Victoria state of Australia (Victoria STV) \cite{PV:2002:EA}, distributing votes of an eliminated candidate occurs step by step in order of the magnitude of the fractional values that those votes carry.  Consequently, a pre-condition for applying the action is to first assure that upon each instance of applying transfer-removed action (a) exactly those votes which have the same fractional value are transferred and (b) the transfer happens according to the magnitude order. In contrast, for example, the STV used in the lower house elections of Tasmania state of Australia (Tasmania STV) does not have such pre-condition simply because votes of an eliminated candidate are transferred in a single application of transfer-removed. There are also variations in postconditions. For example transfer-elect of the ACT STV \cite{ACT} used in the lower house elections of the ACT state of Australia requires distributing only the last parcel of surplus votes received by an elected candidate. But Victoria STV specifies transferring all surplus votes of an elected candidate.  
 
 
-We formally realise variations of STV algorithms by instantiation~(Definition\ref{STVInst}) of the generic machine. Recall that the semantics of the machine is formed by conjunctions of formally specified universally appearing pre and post-conditions in STV algorithms. An instantiation of the machine with an STV algorithm $\mathcal{A}$ happens by enriching the generic semantics by adding formal specifications of the legal clauses that are specific to $\mathcal{A}$. We hence come to define an operational semantics functioning in accordance with instructions of $\mathcal{A}$. 
+We formally realise variations of STV algorithms by instantiation~(Definition\ref{STVInst}) of the generic machine. Recall that the semantics of the machine is formed by conjunctions of formally specified universally appearing pre and postconditions in STV algorithms. An instantiation of the machine with an STV algorithm $\mathcal{A}$ happens by enriching the generic semantics by adding formal specifications of the legal clauses that are specific to $\mathcal{A}$. We hence come to define an operational semantics functioning in accordance with instructions of $\mathcal{A}$. 
 \begin{definition}[Instantiation of the Machine]\label{STVInst}
-Assume the generic machine $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$ as in Definition~\ref{STVMachine}. An instantiation $\hat{\mathcal{A}}$ for an STV algorithm $\mathcal{A}$ into the generic STV machine $M$ is a triple $\langle \mathcal{S}, \mathcal{T}, (S'_t)_{t \in \mathcal{T}} \rangle$, where for each $t\in\mathcal{T}$, $S'_{t}$ $=$ $S_{t}\wedge\bigwedge_{\atop{i\leq j'_{t}}} \phi_{i}$. Each $\phi_{i}$ is the formal specification of a pre- or post-condition specific to $\mathcal{A}$.   
+Assume the generic machine $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$ as in Definition~\ref{STVMachine}. An instantiation $\hat{\mathcal{A}}$ for an STV algorithm $\mathcal{A}$ into the generic STV machine $M$ is a triple $\langle \mathcal{S}, \mathcal{T}, (S'_t)_{t \in \mathcal{T}} \rangle$, where for each $t\in\mathcal{T}$, $S'_{t}$ $=$ $S_{t}\wedge\bigwedge_{\atop{i\leq j'_{t}}} \phi_{i}$. Each $\phi_{i}$ is the formal specification of a pre- or postcondition specific to $\mathcal{A}$.   
 \end{definition}
 
 The operational semantics of each instantiation allows  to perform operations such as validation on evidence. Definition~\ref{verifier} lays down what verifying an evidence amount to. Informally speaking, to check if  evidence is valid one simply needs to inspect if transitions  between each two consecutive states of computation appearing in the evidence occur by a legitimate application of a counting action of the scheme used.
@@ -274,7 +274,7 @@ $\forall i\in\{1,\dots,n-1\}.$
 %\hspace*{0.2cm}$\forall \Omega_{i-1}$ $\Omega_{i}\in\mathcal{S}.$
 %$\exists \Omega_{1}$ $\Omega_{2}\in$ \textsf{List} $(\mathcal{S}).$ $\Omega = \Omega_{1} + [\Omega_{i-1};\Omega_{i}] + \Omega_{2}$  
 $\exists t\in\mathcal{T}.$  $(\Omega_{i-1},\Omega_{i})\in t$ $\wedge~\vdash\mathcal{S}'_{t}[\Omega_{i-1},\Omega_{i}]$\\ 
-where $\mathbb{Q}$ and $\mathbb{N}$ respectively represent the set of rational and natural numbers, $2^{C}$ is the set of all subsets of $C$, and \textsf{List}$(S)$ is the set of all possible lists of machine states. $\Omega_{i-1}$ is a pre-state and $\Omega_{i}$ is a post-state visited in the execution. The last line means that pre- and post-conditions  of applying $t$ to move from $\Omega_{i-1}$ to $\Omega_{i}$  are logically true. 
+where $\mathbb{Q}$ and $\mathbb{N}$ respectively represent the set of rational and natural numbers, $2^{C}$ is the set of all subsets of $C$, and \textsf{List}$(S)$ is the set of all possible lists of machine states. $\Omega_{i-1}$ is a pre-state and $\Omega_{i}$ is a post-state visited in the execution. The last line means that pre- and postconditions  of applying $t$ to move from $\Omega_{i-1}$ to $\Omega_{i}$  are logically true. 
 \end{definition} 
 We shall next provide an example to concretely illustrate a piece of evidence and exemplify how STV schemes work. 
  \subsection{An Example of a Concrete Piece of Evidence}
@@ -523,7 +523,7 @@ We also have another motivation for developing the auxiliary module through this
 \label{MachineData}
  We choose the data structure  given in Definition~\ref{judgement} for implementing the abstract data type underlying the generic STV.  We have four reasons for this choice of data structure. 
  \begin{itemize}
-\item As the abstract syntactic representation of evidence closely represents concrete evidences, designing the parser and inspecting  its  correctness is less challenging.  
+\item As the abstract syntactic representation of evidence closely represents concrete evidence, designing the parser and inspecting  its  correctness is less challenging.  
  \item HOL4 has well developed libraries comprised of verified assertions of operations on list structure. By structuring the data on lists, we facilitate us and users  with exploitation of  already verified tools to formalise the framework and avoid inventing the unnecessary from the scratch. 
  \item HOL4 also has well-developed tactics for discharging proof obligations on assertions involving list structure and operations on it. We therefore come to provide us with means for ease of verification of the formalised assertions.
  \item Understanding the data structure used in the  framework implementation is critical for ease of  its usability and extensibility by third parties.  The type $\mathit{judgement}$ closely models concrete evidence such as figure~\ref{EvInst}. Therefore one can sensibly perceive the  abstraction step taken for modelling  concrete data which in turn enhances understandability of the framework and its mechanism. 
@@ -554,7 +554,7 @@ instead of e.g. floating numbers. Elections with an STV counting scheme have a s
 \subsection{The Semantics and its Auxiliary Components}
 \label{sec:MachineSem}
 
-The semantics of each machine transition label consists of conjunctions of formally specified general pre- and post-conditions across STV schemes which enforce when and how to take a tallying action and what the immediate effect is. To demonstrate the process of specification, implementation and verification of the machine transitions and their semantics, we discuss the transfer-elect transition.
+The semantics of each machine transition label consists of conjunctions of formally specified general pre- and postconditions across STV schemes which enforce when and how to take a tallying action and what the immediate effect is. To demonstrate the process of specification, implementation and verification of the machine transitions and their semantics, we discuss the transfer-elect transition.
 
 
 STV schemes \emph{explicitly} declare four conditions that must be satisfied  for any legitimate application of transfer-elect; 
@@ -652,7 +652,7 @@ Assume $M^{spec} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \math
 \end{theorem}
 
 One can already proceed to synthesise an executable verifier from the machine. Such a verifier can correctly decide if given evidence $\omega$ claimed to have been produced by an algorithm whose counting scheme is STV, instead of e.g. PR list schemes or FPTP.  
-However we wish to generate verifiers that can recognise and validate according to which specific STV algorithm the evidence $\omega$ has been output. Hence we need to enrich the computational content of the machine semantics with more  pre- and post-conditions which are particular to individual STV schemes. We refer to this enrichment process as instantiation of the machine and discuss it further below.
+However we wish to generate verifiers that can recognise and validate according to which specific STV algorithm the evidence $\omega$ has been output. Hence we need to enrich the computational content of the machine semantics with more  pre- and postconditions which are particular to individual STV schemes. We refer to this enrichment process as instantiation of the machine and discuss it further below.
 \section{Instantiations of the Machine}\label{sec:InstMachine}
 We exemplify how instantiation of the transfer-elected succeeds for transferring surplus of elected candidates based on the ACT STV
 %\footnote{The Tasmania STV also uses similar surplus transfer mechanism.}. 
@@ -740,7 +740,7 @@ Moreover less\textunderscore{}than\textunderscore{}quota enforces its specificat
 \end{small}
 We next demonstrate how the framework modularly extends to instantiations  with various STV algorithms.
 \subsection{Variations in Instantiation}
-We discuss instantiation of the transfer-elect  based on the Victoria and CADE STV. As we have already illustrated how a specification and the corresponding implementation of an algorithm advance, we therefore only elaborate on how they vary from ACT STV in textual descriptions of their semantics and subsequently their implementations. 
+We discuss instantiation of the transfer-elect  based on the Victoria and CADE STV \cite{cade}. As we have already illustrated how a specification and the corresponding implementation of an algorithm advance, we therefore only elaborate on how they vary from ACT STV in textual descriptions of their semantics and subsequently their implementations. 
 \subsubsection{Victoria STV}
 Legislature of Victoria's counting scheme does not strictly speak about the notion of parcel. However, as explained under the subsection~\ref{MachineData} it transfers votes of an eliminated candidate stepwise which therefore requires separating votes into different chunks (or parcels). Having eliminated possible misunderstanding, note that Victoria STV matches with ACT STV  on every $\bullet_{i}$ item except for $i\in\{6,8\}$.
 
@@ -824,7 +824,7 @@ Engineered this way, the desideratum is met under the following two scenarios fo
  \paragraph*{Scenario one} We have already formalised and verified instantiation of the machine with five different STV algorithms. If the algorithm $\mathcal{A}$ already exists in our framework then the desideratum is satisfied. No effort beyond following simple instructions to execute on the command line is required to synthesise an executable verifier.  
  \paragraph*{Scenario two} Another possibility is that 
  %the algorithm intended to be instantiated into the machine 
- $\mathcal{A}$ as a whole does not literally match with any of the already existing instantiations of the machine. However, clauses describing pre- and post-conditions of transitions which are components of the semantics of $\mathcal{A}$ do exist in the auxiliary module. Then all one needs doing is to call the formal  specifications of the clauses and their respective implementations into the specification and implementation of transitions, respectively,  to formally obtain an instantiation of the algorithm. In this case, the proofs also succeed in satisfying the desideratum. 
+ $\mathcal{A}$ as a whole does not literally match with any of the already existing instantiations of the machine. However, clauses describing pre- and postconditions of transitions which are components of the semantics of $\mathcal{A}$ do exist in the auxiliary module. Then all one needs doing is to call the formal  specifications of the clauses and their respective implementations into the specification and implementation of transitions, respectively,  to formally obtain an instantiation of the algorithm. In this case, the proofs also succeed in satisfying the desideratum. 
  \paragraph*{Scenario three} 
  Suppose there is a clause in description of $\mathcal{A}$ whose specification, and  therefore implementation,  does not exist in the auxiliary module. Then one trivially has to extend the auxiliary module by specifying and implementing that clause and then verifying the implementation correct against the specification.  If one was overconfident in their implementation, then they can take the implementation as its specification in which case there no verification is required.  Note that as including the generic formal machine transitions in the semantics of each transition instantiation is mandatory  
  there are few  numbers of such clauses and consequently few lines of encoding needed to formalise them. 
@@ -975,6 +975,8 @@ Our work witnesses usability of formal methods, in particular theorem proving, a
 \begin{thebibliography}{00}
 \bibitem{MBlo}
 M.L. Blom, P. J. Stuckey, V. J. Teague, Computing the Margin of Victory in Preferential Parliamentary Elections, E-Vote-ID, 2018, pp.1--16
+\bibitem{cade}
+CADE Bylaws, http://www.cadeinc.org//bylaws
 \bibitem{cake} 
 CakeML: A Verified Implementation of ML, \url{https://cakeml.org/}
 \bibitem{DBLP:conf/voteid/DawsonGM15}
@@ -987,6 +989,8 @@ H. DeYoung, C. Sch{\"{u}}rmann, Linear Logical Voting Protocols, VoteID 2011, LN
 \bibitem{Droop:1881:MER}
 H.R. Droop, On Methods of Electing Representatives. J. of the Statistical
   Society of London  44(2), 1881, pp.141--202
+\bibitem{ACT}
+ACT Electoral Commissions, \url{www.elections.act.gov.au/elections\_and\_voting}
 \bibitem{DFar}
 D.M. Farrell, Electoral Systems: A Comparative Introduction, 2nd ed., New York: Palgrave Macmillan, 2011
 \bibitem{Ghale:2017:FVS}
@@ -1007,6 +1011,8 @@ D. Pattinson, C. Sch{\"{u}}rmann, Vote Counting as Mathematical Proof, 28th Aust
   Conference 2015, pp.464--475
 \bibitem{DBLP:conf/itp/PattinsonT17}
 D. Pattinson, M. Tiwari, Schulze Voting as Evidence Carrying Computation, ITP 2017, pp.410--426
+\bibitem{PV:2002:EA}
+The Parliament of Victoria: Electoral act 2002
 \bibitem{DBLP:conf/acsw/VerityP17}
 F. Verity, D. Pattinson, Formally Verified Invariants of Vote Counting Schemes, ACSW 2017, pp.1--10 
 %\bibitem{cake1}
