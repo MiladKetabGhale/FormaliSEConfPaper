@@ -215,7 +215,7 @@ There are two kinds of discrete states of computation. Some of them are final st
  \item\textbf{pile} to know the ballots allocated to each candidate, 
  \item\textbf{backlog of elected} candidates who have exceeded the quota and their surplus votes awaits being transferred,
  \item\textbf{backlog of eliminated} ones whose votes awaits transfer,
- \item\textbf{elected candidates} who are the already elected ones whose surplus votes must be transferred,
+ \item\textbf{elected candidates} who are the already elected ones,% whose surplus votes must be transferred,
  \item\textbf{continuing candidates} still continuing in the election. 
  \end{itemize}
 The non-final and final states specified above provide us with all information one needs. We therefore find a perfect characterisation for evidence. 
@@ -243,9 +243,9 @@ In a secondary examination of the STV family, we also identify a general algorit
 \caption{Generic STV Counting Steps}
 \label{GenSteps}
 \end{figure}
-Each action is constituted of  pre-conditions on when and how the action comes into effect, and post-conditions dictating what effect applying the action brings about by describing the new state to which computation proceeds. In fact, these conditions are the formal counterparts of the legal clauses in the textual specification of the counting scheme which tell tally officers how to proceed with tallying, and they are common between all flavours of STV. 
+Each action is constituted of  preconditions on when and how the action comes into effect, and postconditions dictating what effect applying the action brings about by describing the new state to which computation proceeds. In fact, these conditions are the formal counterparts of the legal clauses in the textual specification of the counting scheme which tell tally officers how to proceed with tallying, and they are common between all flavours of STV. 
 
-For example a constant pre-condition for applying elimination  asserts that there must be no uncounted ballot left and another one declares that no candidate should be electable at the current state of counting. A post-condition of elimination is that once a candidate is excluded from counting, the list of continuing candidates is updated accordingly so that the excluded candidate no longer received votes. Conjunctions of such declarations comprise what an action is and what an application of that action means.
+For example a constant precondition for applying elimination  asserts that there must be no uncounted ballot left and another one declares that no candidate should be electable at the current state of counting. A postcondition of elimination is that once a candidate is excluded from counting, the list of continuing candidates is updated accordingly so that the excluded candidate no longer received votes. Conjunctions of such declarations comprise what an action is and what an application of that action means.
 
 
 The underlying abstract data type and the universal algorithmic pattern found in STV characterise components of a finite state machine which we call \emph{generic STV}~(Definition\ref{STVMachine}). The set of machine states consist of the discrete states of computation $\mathcal{S}$ mentioned earlier. The seven generic actions form the transition labels $\mathcal{T}$ of the machine. Last, the everywhere present pre- and post-conditions which define (content of)  the actions, make a small-step operational semantics for the machine.  
@@ -258,12 +258,12 @@ be respectively the set of machine states and transition labels.  Also assume fo
 \end{definition}
 There are nonetheless variations in STV algorithms  which we  recognise  by separate \emph{instantiations} into the machine.  
 \subsection{Instantiations of the Machine with Specific STV schemes}
-Differences exist between counting algorithms of STV schemes.  For example in the STV used for electing the upper house representatives of the Victoria state of Australia (Victoria STV), distributing votes of an eliminated candidate occurs step by step in order of the magnitude of the fractional values that those votes carry.  Consequently, a pre-condition for applying the action is to first assure that upon each instance of applying transfer-removed action (a) exactly those votes which have the same fractional value are transferred and (b) the transfer happens according to the magnitude order. In contrast, for example, the STV used in the lower house elections of Tasmania state of Australia (Tasmania STV) does not have such pre-condition simply because votes of an eliminated candidate are transferred in a single application of transfer-removed. There are also variations in post-conditions. For example transfer-elect of the ACT STV used in the lower house elections of the ACT state of Australia requires distributing only the last parcel of surplus votes received by an elected candidate. But Victoria STV specifies transferring all surplus votes of an elected candidate.  
+Differences exist between counting algorithms of STV schemes.  For example in the STV used for electing the upper house representatives of the Victoria state of Australia (Victoria STV)~\cite{vic}, distributing votes of an eliminated candidate occurs step by step in order of the magnitude of the fractional values that those votes carry.  Consequently, a pre-condition for applying the action is to first assure that upon each instance of applying transfer-removed action (a) exactly those votes which have the same fractional value are transferred and (b) the transfer happens according to the magnitude order. In contrast, for example, the STV used in the lower house elections of Tasmania state of Australia (Tasmania STV) does not have such precondition simply because votes of an eliminated candidate are transferred in a single application of transfer-removed. There are also variations in postconditions. For example transfer-elected of the ACT STV~\cite{act} used in the lower house elections of the ACT state of Australia requires distributing only the last parcel of surplus votes received by an elected candidate. But Victoria STV specifies transferring all surplus votes of an elected candidate.  
 
 
-We formally realise variations of STV algorithms by instantiation~(Definition\ref{STVInst}) of the generic machine. Recall that the semantics of the machine is formed by conjunctions of formally specified universally appearing pre and post-conditions in STV algorithms. An instantiation of the machine with an STV algorithm $\mathcal{A}$ happens by enriching the generic semantics by adding formal specifications of the legal clauses that are specific to $\mathcal{A}$. We hence come to define an operational semantics functioning in accordance with instructions of $\mathcal{A}$. 
+We formally realise variations of STV algorithms by instantiation~(Definition~\ref{STVInst}) of the generic machine. Recall that the semantics of the machine~(Definition~\ref{STVMachine}) is formed by conjunctions of formally specified universally appearing pre- and postconditions in STV algorithms. An instantiation of the machine with an STV algorithm $\mathcal{A}$ happens by enriching the generic semantics by adding formal specifications of the legal clauses that are specific to $\mathcal{A}$. We hence come to define an operational semantics functioning in accordance with instructions of $\mathcal{A}$. 
 \begin{definition}[Instantiation of the Machine]\label{STVInst}
-Assume the generic machine $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$ as in Definition~\ref{STVMachine}. An instantiation $\hat{\mathcal{A}}$ for an STV algorithm $\mathcal{A}$ of  the generic STV machine $M$ is a triple $\langle \mathcal{S}, \mathcal{T}, (S'_t)_{t \in \mathcal{T}} \rangle$, where for each $t\in\mathcal{T}$, $S'_{t}$ $=$ $S_{t}\wedge\bigwedge_{\atop{i\leq j'_{t}}} \phi_{i}$. Each $\phi_{i}$ is the formal specification of a pre- or post-condition specific to $\mathcal{A}$.   
+Assume the generic machine $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$ as in Definition~\ref{STVMachine}. An instantiation $\hat{\mathcal{A}}$ for an STV algorithm $\mathcal{A}$ of  the generic STV machine $M$ is a triple $\langle \mathcal{S}, \mathcal{T}, (S'_t)_{t \in \mathcal{T}} \rangle$, where for each $t\in\mathcal{T}$, $S'_{t}$ $=$ $S_{t}\wedge\bigwedge_{\atop{i\leq j'_{t}}} \phi_{i}$. Each $\phi_{i}$ is the formal specification of a pre- or postcondition specific to $\mathcal{A}$.   
 \end{definition}
 
 The operational semantics of each instantiation allows  to perform operations such as validation on evidence. Definition~\ref{verifier} lays down what verifying an evidence amounts to. Informally speaking, to check if  evidence is valid one simply needs to inspect if transitions  between each two consecutive states of computation appearing in the evidence occur by a legitimate application of a counting action of the scheme used.
@@ -273,7 +273,7 @@ Assume $\hat{\mathcal{A}}= \langle \mathcal{S}, \mathcal{T}, (S'_t)_{t \in \math
 $\forall i\in\{1,\dots,n-1\}.$ 
 %\hspace*{0.2cm}$\forall \Omega_{i-1}$ $\Omega_{i}\in\mathcal{S}.$
 %$\exists \Omega_{1}$ $\Omega_{2}\in$ \textsf{List} $(\mathcal{S}).$ $\Omega = \Omega_{1} + [\Omega_{i-1};\Omega_{i}] + \Omega_{2}$  
-$\exists t\in\mathcal{T}.$  $(\Omega_{i-1},\Omega_{i})\in t$ $\wedge~\vdash\S'_{t}[\Omega_{i-1},\Omega_{i}]$\\ 
+$\exists t\in\mathcal{T}.$  $(\Omega_{i-1},\Omega_{i})\in t$ $\wedge~\vdash S'_{t}[\Omega_{i-1},\Omega_{i}]$\\ 
 where $\mathbb{Q}$ and $\mathbb{N}$ respectively represent the set of rational and natural numbers, $2^{C}$ is the set of all subsets of $C$, and \textsf{List}$(\mathcal{S})$ is the set of all possible lists of machine states. $\Omega_{i-1}$ is a pre-state and $\Omega_{i}$ is a post-state visited in the execution. The last line means that pre- and post-conditions  of applying $t$ to move from $\Omega_{i-1}$ to $\Omega_{i}$  are logically true. 
 \end{definition} 
 We shall next provide an example to concretely illustrate a piece of evidence and exemplify how STV schemes work. 
@@ -286,8 +286,10 @@ $b_4=([b,a],1/1)$, $b_5=([c,b,a],1/1)$.  The first component of each ballot is a
 The fourth line is the election result, and the remainder of the evidence are non-final states visited to compute this
 outcome. Each non-final state shows uncounted ballots, tallies of candidates, piles of votes attracted, backlog of the elected, backlog of the eliminated, list of elected candidates, and list of continuing candidates. 
 
-First preferences for each candidate are computed, and ballots counted in favour of particular candidates are placed onto that candidate’s pile. In this election instance, $a$ is the first preference on $b_{1}$, $b_{2}$, and $b_{3}$, and $b$ receives $b_{4}$, and $c$ receives $b_{5}$ . Tallies are updated so that tally of $a$ becomes 3, and $b$
-and $c$ each reach $1/1$. As $a$ exceeds the quota, he is elected and the fractional value of his surplus is updated according to the ACT scheme. Then $a$'s surplus is transferred to continuing candidates $b$ and $c$ and votes are counted according to next preferences shown on $a$'s surplus votes. Candidate $b$ and $c$ each attracts one vote. However  neither of them reaches to the quota. Therefore the weakest one $b$ is eliminated. As the number of elected and continuing candidates does not exceed the initial vacancies, the election terminates by declaring $a$ and $c$ winners.
+First preferences for each candidate are computed. Ballots counted in favour of particular candidates are placed onto that candidate’s pile. In this election, $a$ is the first preference on $b_{1}$, $b_{2}$, and $b_{3}$, $b$ receives $b_{4}$, and $c$ receives $b_{5}$. Tallies are updated so that tally of $a$ becomes 3, and $b$
+and $c$ each reach $1/1$. As $a$ exceeds the quota, he is elected and the fractional value of his surplus is updated according to the ACT scheme. Then $a$'s surplus is transferred to continuing candidates $b$ and $c$ and votes are counted according to next preferences shown on $a$'s surplus votes. Candidate $b$ and $c$ each attracts one vote. However  neither of them reaches to the quota. Hence the weakest one $b$ is eliminated. As the number of elected and continuing candidates is equal to 
+%does not exceed 
+the initial vacancies, the election terminates by declaring $a$ and $c$ winners.
 \begin{small} 
 \begin{figure}[b]
 \begin{tabular}{c@{\hspace{2cm}}c} 
@@ -624,7 +626,7 @@ we obtain specification and computational implementation for other machine trans
 %formally prove that for 
 each transition implementation  matches with its specification.
 \begin{theorem}
-Assume $M^{spec} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \mathcal{T}} \rangle$ is the specification of the machine and  $M^{imp} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{dec})_{t \in \mathcal{T}} \rangle$ is its computational implementation. Then for any $t\in\mathcal{T}$,  $\mathcal{S}_{t}^{spec}\Leftrightarrow\mathcal{S}_{t}^{dec}$.      
+Assume $M^{spec} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{spec})_{t \in \mathcal{T}} \rangle$ is the specification of the machine and  $M^{dec} = \langle \mathcal{S}, \mathcal{T}, (S_{t}^{dec})_{t \in \mathcal{T}} \rangle$ is its computational implementation. Then for any $t\in\mathcal{T}$,  $\mathcal{S}_{t}^{spec}\Leftrightarrow\mathcal{S}_{t}^{dec}$.      
 \end{theorem}
 
 One can already proceed to synthesise an executable verifier from the machine. Such a verifier can correctly decide if given evidence $\omega$ claimed to have been produced by an algorithm whose counting scheme is STV, instead of e.g. First-Past-The-Post voting~\cite{DFar} where voters choose whom they prefer most and the candidate with the most amount of votes received is elected.  
@@ -632,8 +634,7 @@ However we wish to generate verifiers that can recognise and validate according 
 \section{Instantiations of the Machine}\label{sec:InstMachine}
 We exemplify how an instantiation of the transfer-elected succeeds for transferring surplus of elected candidates based on the ACT STV.
 %\footnote{The Tasmania STV also uses similar surplus transfer mechanism.}.
- Instantiation of other machine transitions proceed in a  similar manner.    
-Under section 'Step 3' and 'transfer surplus from elected candidates' the protocol explains under what conditions and how to distribute surplus votes. We summarise and rephrase these sections as follows. 
+ Instantiation of other machine transitions proceed in a  similar manner. Under section 'Step 3' and 'transfer surplus from elected candidates' the protocol explains under what conditions and how to distribute surplus votes. We summarise and rephrase these sections as follows. 
 \begin{itemize}
 \item[$\bullet_{1}$] no  candidate exceeds the quota
 %\item[$\bullet_{2}$] ballots received by a candidate are piled in separate chunks called parcels. 
@@ -650,10 +651,10 @@ Under section 'Step 3' and 'transfer surplus from elected candidates' the protoc
   \HOLthm[def,width=65]{Checker.TransferActSpec_def}
 \end{holthmenv}
 \end{small}
-We augment the formal counterparts of the $\bullet_{i}$ conditions  to the clauses given in section~\ref{sec:MachineSem} to obtain the specification TransferActSpec for transfer-elect of ACT STV.  The last conjunct of TransferActSpec asserts that the pile of every candidate other than $c$ remains the same in both pre- and post-state of the transition. Also note that we place the last parcel of the pile of the candidate $c$ whose votes are transferred first into the list of uncounted ballots so that in the subsequent transition count deals with distributing the votes and "recalculating" candidates' tallies and piles. Finally, because of efficiency purposes our system is designed to update the fractional transfer value of the surplus in formalisation of the elect transition instead of transfer-elect. 
+We augment the formal counterparts of the $\bullet_{i}$ conditions  to the clauses given in section~\ref{sec:MachineSem} to obtain the specification TransferActSpec for transfer-elect of ACT STV.  The last conjunct of TransferActSpec asserts that the pile of every candidate other than $c$ remains the same in both pre- and post-state of the transition. Also note that we place the last parcel of the pile of the candidate $c$ whose votes are transferred first into the list of uncounted ballots so that in the subsequent transition count deals with distributing the votes and ``recalculating'' candidates' tallies and piles. Finally, because of efficiency purposes our system is designed to update the fractional transfer value of the surplus in formalisation of the elect transition instead of the transfer-elected transition. 
 
 We next define computational twins for the components of TransferActSpec and use them to implement a computational counterpart for the semantics of the ACT transfer-elect. 
-For example, the function  get\textunderscore{}cand\textunderscore{}tally looks through a tally list $t$ and finds the tally of an input candidate name $c$. We then verify this function  computes the tally of candidates correctly and that indeed every candidate is assigned only one tally (item 1 of the implicit machine conditions).
+For example, the function get\textunderscore{}cand\textunderscore{}tally looks through a tally list $t$ and finds the tally of an input candidate name $c$. We then verify this function  computes the tally of candidates correctly and that indeed every candidate is assigned only one tally (item 1 of the implicit machine conditions).
 \begin{small}
 \begin{holthmenv}
   \HOLthm[def,width=60]{CheckerProof.EVERY_CAND_HAS_ONE_TALLY}
@@ -677,7 +678,7 @@ Moreover less\textunderscore{}than\textunderscore{}quota enforces its specificat
   \HOLthm[def,width=70]{CheckerProof.less_than_qu_IMP_LogicalLessThanQuota}
 \end{holthmenv}
 \end{small}
- In the same manner we define and verify other functions that computationally  implement the rest of components of the transfer-elect specification. Conjunctions of the implementations constitute a computational semantics for transfer-elect. 
+ In the same manner we define and verify other functions that computationally  implement the rest of components of the transfer-elected specification. Conjunctions of the implementations constitute a computational semantics for transfer-elected. 
  \begin{small}
  \begin{holthmenv}
   \HOLthm[def,width=70]{Checker.TransferActDec_def}
@@ -685,23 +686,9 @@ Moreover less\textunderscore{}than\textunderscore{}quota enforces its specificat
 \end{small}
 We next demonstrate how the framework modularly extends to instantiations  with various STV algorithms.
 \subsection{Variations in Instantiation}
-We discuss instantiation of the transfer-elect  based on the Victoria and CADE STV. As we have already illustrated how a specification and the corresponding implementation of an algorithm advance, we therefore only elaborate on how they vary from ACT STV in textual descriptions of their semantics and subsequently their implementations. 
-\subsubsection{Victoria STV}
-Legislature of Victoria's counting scheme does not strictly speak about the notion of parcel. However, as explained under the subsection~\ref{MachineData} it transfers votes of an eliminated candidate stepwise which therefore requires separating votes into different chunks (or parcels). Having eliminated possible misunderstanding, note that Victoria STV matches with ACT STV  on every $\bullet_{i}$ item except for $i\in\{6,8\}$.
+We have already completed the verifiers synthesis process for five different STV algorithms\footnote{see  \url{https://github.com/MiladKetabGhale/Modular_Checker}}. Here,  we only discuss instantiation of the transfer-elect  based on the  CADE STV~\cite{cade}. As we have already illustrated how a specification and the corresponding implementation of an algorithm advance, we therefore only elaborate on how CADE STV varies from ACT STV in textual descriptions of its  semantics and subsequently its implementations. 
 
-\begin{itemize}
-\item[$\bullet_{6'}$] transfer all of the surplus votes of an elected candidate at a reduced fraction.
-\item[$\bullet_{8'}$] the fractional transfer value is computed based on all of the surplus (not necessarily depending on the last parcel).
-\end{itemize} 
-
-Note that we deal with updating fractional transfer value in the semantics of elect transitions. Also in instantiations of the elect semantics, we guarantee elements of the backlog of elected candidates ($bl_{1}$) are all above the quota. Therefore we formalise Victoria's transfer-elect semantics as follows.
-\begin{small}
- \begin{holthmenv}
-  \HOLthm[def,width=70]{Checker.TransferVicDec_def}
-\end{holthmenv}
-\end{small}
-\subsubsection{CADE STV}
-This scheme is radically different than ``standard'' STV algorithms. In particular, to the best of our knowledge, every ``normal'' STV algorithm at least respects $\bullet_{1}$. However CADE violates not only this condition but also all of the ACT's transfer-elect semantics components except $\bullet_{2}$. This unorthodox behaviour of CADE permeates to the semantics of other transitions as well to an extent where the algorithm is sometimes questioned to be a true member  of the STV family. But our framework flexibly  accommodates even the extraordinary ones. We catalogue CADE's transfer-elect informal semantics  conditions as follows.
+CADE STV is used for electing the board of trustees of the \emph{C}onference on \emph{A}utomated \emph{De}duction. The algorithm is radically different from ``standard'' STV algorithms. In particular, to the best of our knowledge, every ``normal'' STV algorithm at least respects $\bullet_{1}$. However CADE violates not only this condition but also all of the ACT's transfer-elected semantics components except $\bullet_{2}$. This unorthodox behaviour of CADE permeates to the semantics of other transitions as well to an extent where the algorithm is sometimes questioned to be a true member  of the STV family. But our framework flexibly  accommodates even the extraordinary ones. We catalogue CADE's transfer-elected informal semantics  conditions as follows.
 \begin{itemize}
 \item[$\star_{1}$] the backlog of  elected candidates contains one element.
 \item[$\star_{2}$] parcel of the element in the backlog of elected candidates is not empty.
@@ -721,7 +708,7 @@ The clause $\star_{4}$ itself consists of the following sub-clauses.
 \end{holthmenv}
 \end{small}
 \begin{remark}\label{naming}
-In this section, when we instantiated transitions of the machine, particularly transfer-elect, we named instantiations differently. For example, we represented instantiation of transfer-elect with the Victoria STV by  Transfer\underline{Vic}Dec. This choice was out of pedagogical purposes to assist the reader with understanding the work. In actual engineering however we practice a sensible alternative. We carry out different instantiations of the machine in separate modules but uniformly name instantiations of the transitions. For example, for instantiation of the machine with the Victoria STV, we have a module accordingly named and inside the module we refer, for instance, to instantiation of transfer-elect as TransferDec or TransferSpec without the infix Vic.
+In this section, when we instantiated transitions of the machine, particularly transfer-elected, we named instantiations differently. For example, we represented instantiation of transfer-elected with the Victoria STV by  Transfer\underline{Vic}Dec. This choice was out of pedagogical purposes to assist the reader with understanding the work. In actual engineering however we practice a sensible alternative. We carry out different instantiations of the machine in separate modules but uniformly name instantiations of the transitions. For example, for instantiation of the machine with the Victoria STV, we have a module accordingly named and inside the module we refer, for instance, to instantiation of transfer-elect as TransferDec or TransferSpec without the infix Vic.
 \end{remark}
 \begin{remark}\label{rewrting}
 The Core calculus of HOL4 uses \emph{term rewriting} to manipulate assertions expressed in higher-order logic and ML programming style.   
@@ -749,7 +736,7 @@ Engineered this way, the desideratum is met under the following two scenarios fo
  %the algorithm intended to be instantiated into the machine 
  $\mathcal{A}$ as a whole does not literally match with any of the already existing instantiations of the machine. However, clauses describing pre- and post-conditions of transitions which are components of the semantics of $\mathcal{A}$ do exist in the auxiliary module. Then all one needs doing is to call the formal  specifications of the clauses and their respective implementations into the specification and implementation of transitions, respectively,  to formally obtain an instantiation of the algorithm. In this case, the proofs also succeed in satisfying the desideratum. 
  \paragraph*{Scenario three} 
- Suppose there is a clause in description of $\mathcal{A}$ whose specification, and  therefore implementation,  does not exist in the auxiliary module. Then one trivially has to extend the auxiliary module by specifying and implementing that clause and then verifying the implementation correct against the specification.  If one was overconfident in their implementation, then they can take the implementation as its specification in which case there no verification is required.  Note that as including the generic formal machine transitions in the semantics of each transition instantiation is mandatory  
+ Suppose there is a clause in description of $\mathcal{A}$ whose specification, and  therefore implementation,  does not exist in the auxiliary module. Then one trivially has to extend the auxiliary module by specifying and implementing that clause and then verifying the implementation correct against the specification.  If one was overconfident in their implementation, then they can take the implementation as its specification in which case  no verification is required.  Note that as including the generic formal machine transitions in the semantics of each transition instantiation is mandatory  
  there are few  numbers of such clauses and consequently few lines of encoding needed to formalise them. 
  
  Once the proofs of equivalence between the specification and implementation of a machine instantiation either automatically or interactively succeed, the rest of verifier synthesis process for the instantiated algorithm completely automatically follows to eventually obtain an executable verifier. 
@@ -878,8 +865,12 @@ We introduced a framework for synthesise of provably trustworthy tools for trans
 %We minimised the trusted computing base by choosing HOL4+CakeML as our  means for developing the framework which allow synthesis of verified verifiers down to machine executable code. Therefore we come to This framework stands an an exemplary demonstration of usability of formal methods, in particular theorem proving, in building usable verified efficient software. 
 
 \begin{thebibliography}{00}
+\bibitem{act}
+ACT Electoral Commission, \url{www.elections.act.gov.au/elections\_and\_voting} 
 \bibitem{MBlo}
 M.L. Blom, P. J. Stuckey, V. J. Teague, Computing the Margin of Victory in Preferential Parliamentary Elections, E-Vote-ID, 2018, pp.1--16
+\bibitem{cade}
+CADE: The Single Transferable Vote, \url{http://www.cadeinc.org//bylaws} 
 \bibitem{cake} 
 CakeML: A Verified Implementation of ML, \url{https://cakeml.org/}
 \bibitem{DBLP:conf/voteid/DawsonGM15}
@@ -912,6 +903,8 @@ D. Pattinson, C. Sch{\"{u}}rmann, Vote Counting as Mathematical Proof, 28th Aust
   Conference 2015, pp.464--475
 \bibitem{DBLP:conf/itp/PattinsonT17}
 D. Pattinson, M. Tiwari, Schulze Voting as Evidence Carrying Computation, ITP 2017, pp.410--426
+\bibitem{vic}
+The Parliament of Victoria: Electoral Act 2002
 \bibitem{DBLP:conf/acsw/VerityP17}
 F. Verity, D. Pattinson, Formally Verified Invariants of Vote Counting Schemes, ACSW 2017, pp.1--10 
 %\bibitem{cake1}
