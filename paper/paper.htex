@@ -225,7 +225,8 @@ Also assume  $y$ is the output of an execution of $\mathcal{A}$ on an input $x$.
 \label{sec:Machine}
 \setlength{\abovedisplayskip}{0.5em}
 \setlength{\belowdisplayskip}{0.5em}
-We have already discussed an abstract data type whose values  formally represent evidence. However we do not yet possess an operational semantics for manipulating data to validate evidence.   On one hand, the semantics must be flexible enough to accommodate variations existing in the counting mechanism of STV algorithms so that we can produce verifiers  specifically operating for validation of evidence output by their associated scheme. On the other hand it must facilitate designing and developing the framework modularly while offering automation of synthesising process of verifiers.
+We have already discussed an abstract data type whose values  formally represent evidence. However we do not yet possess an operational semantics to describe the way this data type is manipulated as part of the process of  evidence validation.
+On one hand, the semantics must be flexible enough to accommodate variations existing in the counting mechanism of STV algorithms so that we can produce verifiers  specifically operating for validation of evidence output by their associated scheme. On the other hand, it must also facilitate designing and developing the framework modularly while offering automation of synthesising process of verifiers.
 
 
 In a secondary examination of the STV family, we also identify a general algorithmic mechanism for performing computation on evidence, which realises the \emph{commonalities} among the family members. This generic method comprises seven general actions%~(Figure~\ref{GenSteps})
@@ -247,20 +248,20 @@ In a secondary examination of the STV family, we also identify a general algorit
 %\label{GenSteps}
 %\end{figure}
 \end{definition}
-Each action is constituted of  preconditions on when and how the action comes into effect, and postconditions dictating what effect applying the action brings about by describing the new state to which computation proceeds. In fact, these conditions are the formal counterparts of the legal clauses in the textual specification of the counting scheme which tell tally officers how to proceed with tallying, and they are common between all flavours of STV.
+Each action consists of preconditions on when and how the action comes into effect, and postconditions dictating what effect applying the action brings about by describing the new state to which computation proceeds. In fact, these conditions are the formal counterparts of the legal clauses in the textual specification of the counting scheme which tell tally officers how to proceed with tallying, and they are common between all flavours of STV.
 
-For example a constant precondition for applying elimination  asserts that there must be no uncounted ballot left and another one declares that no candidate should be electable at the current state of counting. A postcondition of elimination is that once a candidate is excluded from counting, the list of continuing candidates is updated accordingly so that the excluded candidate no longer received votes. Conjunctions of such declarations comprise what an action is and what an application of that action means.
+For example, two preconditions for applying elimination asserts that (i) there must be no uncounted ballots left, and (ii) that no candidate should be electable at the current state of counting. A postcondition of elimination is that once a candidate is excluded from counting, the list of continuing candidates is updated accordingly so that the excluded candidate no longer receives votes. Conjunctions of such declarations comprise what an action is and what an application of that action means.
 
 
-The underlying abstract data type and the universal algorithmic pattern found in STV characterise components of a finite state machine which we call \emph{generic STV}~(Definition\ref{STVMachine}). The set of machine states consist of the discrete states of computation $\mathcal{S}$ mentioned earlier. The seven generic actions form the transition labels $\mathcal{T}$ of the machine. Last, the everywhere present pre- and post-conditions which define (content of)  the actions, make a small-step operational semantics for the machine.
-Note that the states of computation recorded in all possible  evidence now become identical with machine states.
+The underlying abstract data type and the universal algorithmic pattern found in STV characterise components of a finite state machine which we call \emph{generic STV}~(Definition\ref{STVMachine}). The set of machine states consist of the discrete states of computation $\mathcal{S}$ mentioned earlier. The seven generic actions form the transition labels $\mathcal{T}$ of the machine. Finally, the pre- and post-conditions which define the actions result in a small-step operational semantics for the machine.
+Note that the states of computation recorded in evidence now become identical with machine states.
 
 
 \begin{definition}[The generic STV machine]\label{STVMachine}
 Let $\mathcal{S}$  and $\mathcal{T}$
 be respectively the set of machine states and transition labels.  Also assume for $t\in\mathcal{T}$, $S_{t}$ $=$ $\bigwedge_{\atop{i\leq j_{t}}} \psi_{i}$ where  for $i\in\{1...j_{t}\}$, $\psi_{i}$ is the formal specification (in higher-order logic) of a pre- or post-condition of $t$. Then the \emph{generic STV} is the triple $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$.
 \end{definition}
-There are nonetheless variations in STV algorithms  which we  recognise  by separate \emph{instantiations} into the machine.
+There are nonetheless variations in STV algorithms  which we  recognise  by separate \emph{instantiations} of the machine.
 \subsection{Instantiations of the Machine with Specific STV schemes}
 Differences exist between counting algorithms of STV schemes.  For example in the STV used for electing the upper house representatives of the Victoria state of Australia (Victoria STV)~\cite{vic}, distributing votes of an eliminated candidate occurs step by step in order of the magnitude of the fractional values that those votes carry.  Consequently, a pre-condition for applying the action is to first assure that upon each instance of applying transfer-removed action (a) exactly those votes which have the same fractional value are transferred and (b) the transfer happens according to the magnitude order. In contrast, for example, the STV used in the lower house elections of Tasmania state of Australia (Tasmania STV) does not have such precondition simply because votes of an eliminated candidate are transferred in a single application of transfer-removed. There are also variations in postconditions. For example transfer-elected of the ACT STV~\cite{act} used in the lower house elections of the ACT state of Australia requires distributing only the last parcel of surplus votes received by an elected candidate. But Victoria STV specifies transferring all surplus votes of an elected candidate.
 
