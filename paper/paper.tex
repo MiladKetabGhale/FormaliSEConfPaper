@@ -253,13 +253,14 @@ Each action is constituted of  preconditions on when and how the action comes in
 For example a constant precondition for applying elimination  asserts that there must be no uncounted ballot left and another one declares that no candidate should be electable at the current state of counting. A postcondition of elimination is that once a candidate is excluded from counting, the list of continuing candidates is updated accordingly so that the excluded candidate no longer received votes. Conjunctions of such declarations comprise what an action is and what an application of that action means.
 
 
-The underlying abstract data type and the universal algorithmic pattern found in STV characterise components of a finite state machine which we call \emph{generic STV}~(Definition\ref{STVMachine}). The set of machine states consist of the discrete states of computation $\mathcal{S}$ mentioned earlier. The seven generic actions form the transition labels $\mathcal{T}$ of the machine. Last, the everywhere present pre- and post-conditions which define (content of)  the actions, make a small-step operational semantics for the machine.  
+The underlying abstract data type and the universal algorithmic pattern found in STV characterise components of a finite state machine which we call \emph{generic STV}~(Definition\ref{STVMachine}). The set of machine states consist of the discrete states of computation $\mathcal{S}$ mentioned earlier. The seven generic actions given in Definition~\ref{transitions} form the transition labels $\mathcal{T}$ of the machine. Last, the everywhere present pre- and post-conditions which define (content of)  the actions, make a small-step operational semantics for the machine.  
 Note that the states of computation recorded in all possible  evidence now become identical with machine states.
 
 
 \begin{definition}[The generic STV machine]\label{STVMachine}
 Let $\mathcal{S}$  and $\mathcal{T}$
-be respectively the set of machine states and transition labels.  Also assume for $t\in\mathcal{T}$, $S_{t}$ $=$ $\bigwedge_{\atop{i\leq j_{t}}} \psi_{i}$ where  for $i\in\{1...j_{t}\}$, $\psi_{i}$ is the formal specification (in higher-order logic) of a pre- or post-condition of $t$. Then the \emph{generic STV} is the triple $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$.  
+be respectively the set of machine states and transition labels.  Also assume for $t\in\mathcal{T}$, $S_{t}$ $=$ $\bigwedge_{\atop{i\leq j_{t}}} \psi_{i}$ 
+ where $\psi_{i}$ is the formal specification (in higher-order logic) of a pre- or post-condition of $t$. Then the \emph{generic STV} is the triple $M = \langle \mathcal{S}, \mathcal{T}, (S_t)_{t \in \mathcal{T}} \rangle$.  
 \end{definition}
 There are nonetheless variations in STV algorithms  which we  recognise  by separate \emph{instantiations} into the machine.  
 \subsection{Instantiations of the Machine with Specific STV schemes}
@@ -582,7 +583,7 @@ necessary for proper functioning of the explicit constraints;
 \item any elected candidate is no longer a continuing candidate so that they do not receive votes any further
 \item the list of competing candidates in the election is not empty and has no duplication of names
 \end{enumerate}  
-Conjunctions of formal declarations of the above explicit and implicit conditions forms the semantics of the transition label transfer-elect.   The predicate TransferAuxSpec defines  the semantics of this transition.
+Conjunctions of formal declarations of the above explicit and implicit conditions form the semantics of the transition label transfer-elect.   The predicate TransferAuxSpec defines  the semantics of this transition.
  \begin{small}
 \begin{holthmenv}
   \HOLConst{TransferAuxSpec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLFreeVar{ba}\;\HOLFreeVar{t}\;\HOLFreeVar{t\sp{\prime}}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{bl}\;\HOLFreeVar{bl\sb{\mathrm{2}}}\;\HOLFreeVar{bl\sb{\mathrm{2}}\sp{\prime}}\;\HOLFreeVar{e}\;\HOLFreeVar{e\sp{\prime}}\;\HOLFreeVar{h}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{\HOLTokenEquiv{}}\\
@@ -594,7 +595,7 @@ Conjunctions of formal declarations of the above explicit and implicit condition
 \end{holthmenv}
 \end{small}
 
-Transfer-elect, as is the case for other formalised transitions, is parametrised by the quota $qu$, number of initial vacancies $st$ and the list $l$ of all candidates competing in the election. The semantics of the transition declares that given the ballots $ba$, tally $t$, pile $p$, backlog of elected $bl$, backlog of eliminated $bl_{2}$ and the list of elected $e$ and continuing candidates $h$ in the pre-state of transfer-elected, and their respective counterparts in the post-state characterised by having a prime symbol, some conditions as specified above are satisfied by the transition.  
+Transfer-elect, as is the case for other formalised transitions, is parametrised by the quota $qu$, number of initial vacancies $st$ and the list $l$ of all candidates competing in the election. The semantics of the transition declares that given the ballots $ba$, tally $t$, pile $p$, backlog of elected $bl$, backlog of eliminated $bl_{2}$ and the list of elected $e$ and continuing candidates $h$ in the pre-state of transfer-elected, and their respective counterparts in the post-state characterised by having a prime symbol, some conditions as specified above are satisfied by the transition.  Note that \textsf{mem} in Definition of TransferAuxSpec declares list membership. 
   
    
   
@@ -621,7 +622,7 @@ We implement for each of the above declarations a counterpart computational \und
 \begin{holthmenv}
   \HOLConst{Valid_PileTally_dec2}\;\HOLFreeVar{t}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{true}\\
 \HOLConst{Valid_PileTally_dec2}\;\HOLFreeVar{t}\;(\HOLFreeVar{l\sb{\mathrm{0}}}\HOLSymConst{::}\HOLFreeVar{ls})\;\HOLSymConst{\HOLTokenEquiv{}}\\
-\;\;\HOLKeyword{if}\;\HOLConst{\HOLConst{mem}}\;\HOLFreeVar{l\sb{\mathrm{0}}}\;(\HOLConst{map}\;\HOLConst{fst}\;\HOLFreeVar{t})\;\HOLKeyword{then}\;\HOLConst{Valid_PileTally_dec2}\;\HOLFreeVar{t}\;\HOLFreeVar{ls}\\
+\;\;\HOLKeyword{if}\;\HOLConst{\HOLConst{mem}}\;\HOLFreeVar{l\sb{\mathrm{0}}}\;(\HOLConst{map}\;\HOLConst{fst}\;\HOLFreeVar{t})\;\HOLKeyword{then}\;\HOLConst{Valid_PileTally_dec2}\;\HOLFreeVar{t}\;\HOLFreeVar{ls}\;
 \HOLKeyword{else}\;\HOLConst{false}
 \end{holthmenv}
 \end{small}
@@ -632,7 +633,7 @@ We prove that the implementations and specification match:
 \;\;\HOLConst{Valid_PileTally_dec1}\;\HOLFreeVar{t}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{Valid_PileTally_dec2}\;\HOLFreeVar{t}\;\HOLFreeVar{l}
 \end{holthmenv}
 \end{small}
-Conjunctions of the computational implementations  define a computational twin TransferAuxDec for the specification  of the transfer-elect semantics TransferAuxSpec. 
+Conjunctions of the computational implementations  define a computational twin TransferAuxDec for the specification  of the transfer-elected semantics TransferAuxSpec. 
 \begin{small}
 \begin{holthmenv}
   \HOLConst{TransferAuxDec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLFreeVar{ba}\;\HOLFreeVar{t}\;\HOLFreeVar{t\sp{\prime}}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{bl}\;\HOLFreeVar{bl\sb{\mathrm{2}}}\;\HOLFreeVar{bl\sb{\mathrm{2}}\sp{\prime}}\;\HOLFreeVar{e}\;\HOLFreeVar{e\sp{\prime}}\;\HOLFreeVar{h}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{\HOLTokenEquiv{}}\\
@@ -676,50 +677,46 @@ We exemplify how an instantiation of the transfer-elected succeeds for transferr
 \begin{small}
 \begin{holthmenv}
   \HOLConst{TransferActSpec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLFreeVar{j\sb{\mathrm{1}}}\;\HOLFreeVar{j\sb{\mathrm{2}}}\;\HOLSymConst{\HOLTokenEquiv{}}\\
-\;\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{ba}\;\HOLBoundVar{nba}\;\HOLBoundVar{t}\;\HOLBoundVar{nt}\;\HOLBoundVar{p}\;\HOLBoundVar{np}\;\HOLBoundVar{bl}\;\HOLBoundVar{nbl}\;\HOLBoundVar{bl\sb{\mathrm{2}}}\;\HOLBoundVar{nbl\sb{\mathrm{2}}}\;\HOLBoundVar{e}\;\HOLBoundVar{ne}\;\HOLBoundVar{h}\;\HOLBoundVar{nh}.\\
-\;\;\;\;\;\;\HOLFreeVar{j\sb{\mathrm{1}}}\;\HOLSymConst{=}\;\HOLConst{NonFinal}\;(\HOLBoundVar{ba}\HOLSymConst{,}\HOLBoundVar{t}\HOLSymConst{,}\HOLBoundVar{p}\HOLSymConst{,}\HOLBoundVar{bl}\HOLSymConst{,}\HOLBoundVar{bl\sb{\mathrm{2}}}\HOLSymConst{,}\HOLBoundVar{e}\HOLSymConst{,}\HOLBoundVar{h})\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\;\;\HOLConst{TransferAuxSpec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLBoundVar{ba}\;\HOLBoundVar{t}\;\HOLBoundVar{nt}\;\HOLBoundVar{p}\;\HOLBoundVar{np}\;\HOLBoundVar{bl}\;\HOLBoundVar{bl\sb{\mathrm{2}}}\;\HOLBoundVar{nbl\sb{\mathrm{2}}}\;\HOLBoundVar{e}\;\HOLBoundVar{ne}\;\HOLBoundVar{h}\\
-\;\;\;\;\;\;\;\;\HOLBoundVar{nh}\;\HOLSymConst{\HOLTokenConj{}}\;(\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{c\sp{\prime}}.\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c\sp{\prime}}\;\HOLBoundVar{h}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{x}.\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{x})\;\HOLBoundVar{t}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLBoundVar{x}\;\HOLSymConst{\HOLTokenLt{}}\;\HOLFreeVar{qu})\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\;\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{l\sp{\prime}}\;\HOLBoundVar{c}.\\
-\;\;\;\;\;\;\;\;\;\;(\HOLBoundVar{bl}\;\HOLSymConst{=}\;\HOLBoundVar{c}\HOLSymConst{::}\HOLBoundVar{l\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\;\;\;\;\;\;\;(\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{l\sp{\prime\prime}}.\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime\prime}})\;\HOLBoundVar{p}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLBoundVar{l\sp{\prime\prime}}\;\HOLSymConst{\HOLTokenNotEqual{}}\;\HOLConst{\ensuremath{[\,]}})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLBoundVar{nbl}\;\HOLSymConst{=}\;\HOLBoundVar{l\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\;\;\;\;\;\;\;\HOLBoundVar{nba}\;\HOLSymConst{=}\;\HOLConst{last}\;(\HOLConst{get_cand_pile}\;\HOLBoundVar{c}\;\HOLBoundVar{p})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c}\HOLSymConst{,}\HOLConst{\ensuremath{[\,]}})\;\HOLBoundVar{np}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\;\;\;\;\;\;\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{d\sp{\prime}}.\\
-\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\HOLBoundVar{d\sp{\prime}}\;\HOLSymConst{\HOLTokenNotEqual{}}\;\HOLBoundVar{c}\;\HOLSymConst{\HOLTokenImp{}}\\
-\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{l\sp{\prime}}.\\
-\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;(\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{p}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{np})\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;(\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{np}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{l\sp{\prime}})\;\HOLBoundVar{p}))\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\;\;\;\;\;\;\HOLFreeVar{j\sb{\mathrm{2}}}\;\HOLSymConst{=}\;\HOLConst{NonFinal}\;(\HOLBoundVar{nba}\HOLSymConst{,}\HOLBoundVar{nt}\HOLSymConst{,}\HOLBoundVar{np}\HOLSymConst{,}\HOLBoundVar{nbl}\HOLSymConst{,}\HOLBoundVar{nbl\sb{\mathrm{2}}}\HOLSymConst{,}\HOLBoundVar{ne}\HOLSymConst{,}\HOLBoundVar{nh})
+\;\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{ba}\;\HOLBoundVar{ba\sp{\prime}}\;\HOLBoundVar{t}\;\HOLBoundVar{t\sp{\prime}}\;\HOLBoundVar{p}\;\HOLBoundVar{p\sp{\prime}}\;\HOLBoundVar{bl}\;\HOLBoundVar{bl\sp{\prime}}\;\HOLBoundVar{bl\sb{\mathrm{2}}}\;\HOLBoundVar{bl\sb{\mathrm{2}}\sp{\prime}}\;\HOLBoundVar{e}\;\HOLBoundVar{e\sp{\prime}}\;\HOLBoundVar{h}\;\HOLBoundVar{h\sp{\prime}}.\\
+\;\;\;\;\HOLFreeVar{j\sb{\mathrm{1}}}\;\HOLSymConst{=}\;\HOLConst{NonFinal}\;(\HOLBoundVar{ba}\HOLSymConst{,}\HOLBoundVar{t}\HOLSymConst{,}\HOLBoundVar{p}\HOLSymConst{,}\HOLBoundVar{bl}\HOLSymConst{,}\HOLBoundVar{bl\sb{\mathrm{2}}}\HOLSymConst{,}\HOLBoundVar{e}\HOLSymConst{,}\HOLBoundVar{h})\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\;\;\HOLConst{TransferAuxSpec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLBoundVar{ba}\;\HOLBoundVar{t}\;\HOLBoundVar{t\sp{\prime}}\;\HOLBoundVar{p}\;\HOLBoundVar{p\sp{\prime}}\;\HOLBoundVar{bl}\;\HOLBoundVar{bl\sb{\mathrm{2}}}\;\HOLBoundVar{bl\sb{\mathrm{2}}\sp{\prime}}\;\HOLBoundVar{e}\;\HOLBoundVar{e\sp{\prime}}\;\HOLBoundVar{h}\HOLBoundVar{h\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\\\;\;\;\;(\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{c\sp{\prime}}.\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c\sp{\prime}}\;\HOLBoundVar{h}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{x}.\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{x})\;\HOLBoundVar{t}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLBoundVar{x}\;\HOLSymConst{\HOLTokenLt{}}\;\HOLFreeVar{qu})\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\;\;\;\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{l\sb{\mathrm{1}}}\;\HOLBoundVar{c}.
+\;(\HOLBoundVar{bl}\;\HOLSymConst{=}\;\HOLBoundVar{c}\HOLSymConst{::}\HOLBoundVar{l\sb{\mathrm{1}}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenConj{}}\;(\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{l\sb{\mathrm{2}}}.\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c}\HOLSymConst{,}\HOLBoundVar{l\sb{\mathrm{2}}})\;\HOLBoundVar{p}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLBoundVar{l\sb{\mathrm{2}}}\;\HOLSymConst{\HOLTokenNotEqual{}}\;\HOLConst{\ensuremath{[\,]}})\\\;\;\;\;\;\;\HOLSymConst{\HOLTokenConj{}}\;\HOLBoundVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLBoundVar{l\sb{\mathrm{1}}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLBoundVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{last}\;(\HOLConst{getCandPile}\;\HOLBoundVar{c}\;\HOLBoundVar{p})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c}\HOLSymConst{,}\HOLConst{\ensuremath{[\,]}})\;\HOLBoundVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\;\;\;\;\HOLSymConst{*}\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{d}.
+\;\HOLBoundVar{d}\;\HOLSymConst{\HOLTokenNotEqual{}}\;\HOLBoundVar{c}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{l\sb{\mathrm{3}}}.\;(\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d}\HOLSymConst{,}\HOLBoundVar{l\sb{\mathrm{3}}})\;\HOLBoundVar{p}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d}\HOLSymConst{,}\HOLBoundVar{l\sb{\mathrm{3}}})\;\HOLBoundVar{p\sp{\prime}})\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\;\;\;\;\HOLSymConst{*}\;\;\;(\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d}\HOLSymConst{,}\HOLBoundVar{l\sb{\mathrm{3}}})\;\HOLBoundVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{d}\HOLSymConst{,}\HOLBoundVar{l\sb{\mathrm{3}}})\;\HOLBoundVar{p}))\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\;\;\;\;\;\;\;\;\HOLFreeVar{j\sb{\mathrm{2}}}\;\HOLSymConst{=}\;\HOLConst{NonFinal}\;(\HOLBoundVar{nba}\HOLSymConst{,}\HOLBoundVar{t\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{p\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{bl\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{bl\sb{\mathrm{2}}\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{e\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{h\sp{\prime}})
 \end{holthmenv}
 \end{small}
-We augment the formal counterparts of the $\bullet_{i}$ conditions  to the clauses given in section~\ref{sec:MachineSem} to obtain the specification TransferActSpec for transfer-elect of ACT STV.  The last conjunct of TransferActSpec asserts that the pile of every candidate other than $c$ remains the same in both pre- and post-state of the transition. Also note that we place the last parcel of the pile of the candidate $c$ whose votes are transferred first into the list of uncounted ballots so that in the subsequent transition count deals with distributing the votes and ``recalculating'' candidates' tallies and piles. Finally, because of efficiency purposes our system is designed to update the fractional transfer value of the surplus in formalisation of the elect transition instead of the transfer-elected transition. 
+We augment the formal counterparts of the $\bullet_{i}$ conditions  to the clauses given in Section~\ref{sec:MachineSem} to obtain the specification TransferActSpec for transfer-elect of ACT STV.  
+%The last conjunct of TransferActSpec asserts that the pile of every candidate other than $c$ remains the same in both pre- and post-state of the transition. 
+The lines denoted by the star symbol~($\star$) in Definition of TransferActSpec formalise the Clause~$\bullet_{7}$ above. Also note that we place the last parcel of the pile of the candidate $c$ whose votes are transferred first into the list of uncounted ballots so that in the subsequent transition count deals with distributing the votes and ``recalculating'' candidates' tallies and piles. Finally, because of efficiency purposes our system is designed to update the fractional transfer value of the surplus in formalisation of the elect transition instead of the transfer-elected transition. 
 
 We next define computational twins for the components of TransferActSpec and use them to implement a computational counterpart for the semantics of the ACT transfer-elect. 
-For example, the function get\textunderscore{}cand\textunderscore{}tally looks through a tally list $t$ and finds the tally of an input candidate name $c$. We then verify this function  computes the tally of candidates correctly and that indeed every candidate is assigned only one tally (item 1 of the implicit machine conditions).
+For example, the function getCandTally looks through a tally list $t$ and finds the tally of an input candidate name $c$. We then verify this function  computes the tally of candidates correctly and that indeed every candidate is assigned only one tally (item 1 of the implicit machine conditions).
 \begin{small}
 \begin{holthmenv}
-  \HOLConst{distinct}\;(\HOLConst{map}\;\HOLConst{fst}\;\HOLFreeVar{t})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLFreeVar{c}\HOLSymConst{,}\HOLFreeVar{x})\;\HOLFreeVar{t}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{get_cand_tally}\;\HOLFreeVar{c}\;\HOLFreeVar{t}\;\HOLSymConst{=}\;\HOLFreeVar{x}
+  \HOLConst{distinct}\;(\HOLConst{map}\;\HOLConst{fst}\;\HOLFreeVar{t})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;(\HOLFreeVar{c}\HOLSymConst{,}\HOLFreeVar{x})\;\HOLFreeVar{t}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{getCandTally}\;\HOLFreeVar{c}\;\HOLFreeVar{t}\;\HOLSymConst{=}\;\HOLFreeVar{x}
 \end{holthmenv}
 \end{small}
-Using this function, we implement another function less\textunderscore{}than\textunderscore{}quota which checks if the tally of every candidate in a given list $ls$ is below the quota (item $\bullet_{1}$).
+Using this function, we implement another function lessThanQuota which checks if the tally of every candidate in a given list $ls$ is below the quota (item $\bullet_{1}$).
 \begin{small}
 \begin{holthmenv}
- \HOLConst{less_than_quota}\;\HOLFreeVar{qu}\;\HOLFreeVar{l}\;\HOLFreeVar{ls}\;\HOLSymConst{\HOLTokenEquiv{}}\\
-\;\;\HOLConst{EVERY}\;(\HOLTokenLambda{}\HOLBoundVar{h}.\;\HOLConst{get_cand_tally}\;\HOLBoundVar{h}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenLt{}}\;\HOLFreeVar{qu})\;\HOLFreeVar{ls}
+ \HOLConst{lessThanQuota}\;\HOLFreeVar{qu}\;\HOLFreeVar{l}\;\HOLFreeVar{ls}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{EVERY}\;(\HOLTokenLambda{}\HOLBoundVar{h}.\;\HOLConst{getCandTally}\;\HOLBoundVar{h}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenLt{}}\;\HOLFreeVar{qu})\;\HOLFreeVar{ls}
 \end{holthmenv}
 \end{small} 
-We show less\textunderscore{}than\textunderscore{}quota is a  computational realisation of  its specification: 
+We show that the function lessThanQuota is a  computational realisation of  its specification: 
 \begin{small}
 \begin{holthmenv}
   (\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{c}.\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c}\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{x}.\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c}\HOLSymConst{,}\HOLBoundVar{x})\;\HOLFreeVar{t}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLBoundVar{x}\;\HOLSymConst{\HOLTokenLt{}}\;\HOLFreeVar{qu})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{distinct}\;(\HOLConst{map}\;\HOLConst{fst}\;\HOLFreeVar{t})\;\HOLSymConst{\HOLTokenConj{}}\\
-(\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{c\sp{\prime\prime}}.\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c\sp{\prime\prime}}\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c\sp{\prime\prime}}\;(\HOLConst{map}\;\HOLConst{fst}\;\HOLFreeVar{t}))\;\HOLSymConst{\HOLTokenImp{}}\\
-\;\;\HOLConst{less_than_quota}\;\HOLFreeVar{qu}\;\HOLFreeVar{t}\;\HOLFreeVar{h}
+(\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{c\sp{\prime\prime}}.\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c\sp{\prime\prime}}\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c\sp{\prime\prime}}\;(\HOLConst{map}\;\HOLConst{fst}\;\HOLFreeVar{t}))\;\HOLSymConst{\HOLTokenImp{}}
+\;\HOLConst{lessThanQuota}\;\HOLFreeVar{qu}\;\HOLFreeVar{t}\;\HOLFreeVar{h}
 \end{holthmenv}
 \end{small}
-Moreover less\textunderscore{}than\textunderscore{}quota enforces its specification.
+Moreover lessThanQuota enforces its specification.
  \begin{small}
 \begin{holthmenv}
-  \HOLConst{less_than_quota}\;\HOLFreeVar{qu}\;(\HOLFreeVar{t\sb{\mathrm{0}}}\HOLSymConst{::}\HOLFreeVar{t\sb{\mathrm{1}}})\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{Valid_PileTally_dec2}\;(\HOLFreeVar{t\sb{\mathrm{0}}}\HOLSymConst{::}\HOLFreeVar{t\sb{\mathrm{1}}})\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenImp{}}\\
+  \HOLConst{lessThanQuota}\;\HOLFreeVar{qu}\;(\HOLFreeVar{t\sb{\mathrm{0}}}\HOLSymConst{::}\HOLFreeVar{t\sb{\mathrm{1}}})\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{Valid_PileTally_dec2}\;(\HOLFreeVar{t\sb{\mathrm{0}}}\HOLSymConst{::}\HOLFreeVar{t\sb{\mathrm{1}}})\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenImp{}}\\
 \;\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{c}.\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c}\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenImp{}}\;\HOLSymConst{\HOLTokenExists{}}\HOLBoundVar{x}.\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{c}\HOLSymConst{,}\HOLBoundVar{x})\;(\HOLFreeVar{t\sb{\mathrm{0}}}\HOLSymConst{::}\HOLFreeVar{t\sb{\mathrm{1}}})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLBoundVar{x}\;\HOLSymConst{\HOLTokenLt{}}\;\HOLFreeVar{qu}
 \end{holthmenv}
 \end{small}
@@ -729,31 +726,29 @@ Moreover less\textunderscore{}than\textunderscore{}quota enforces its specificat
   \HOLConst{TransferActDec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;(\HOLConst{NonFinal}\;(\HOLFreeVar{ba}\HOLSymConst{,}\HOLFreeVar{t}\HOLSymConst{,}\HOLFreeVar{p}\HOLSymConst{,}\HOLFreeVar{bl}\HOLSymConst{,}\HOLFreeVar{bl\sb{\mathrm{2}}}\HOLSymConst{,}\HOLFreeVar{e}\HOLSymConst{,}\HOLFreeVar{h}))\\
 \;\;(\HOLConst{NonFinal}\;(\HOLFreeVar{ba\sp{\prime}}\HOLSymConst{,}\HOLFreeVar{t\sp{\prime}}\HOLSymConst{,}\HOLFreeVar{p\sp{\prime}}\HOLSymConst{,}\HOLFreeVar{bl\sp{\prime}}\HOLSymConst{,}\HOLFreeVar{bl\sb{\mathrm{2}}\sp{\prime}}\HOLSymConst{,}\HOLFreeVar{e\sp{\prime}}\HOLSymConst{,}\HOLFreeVar{h\sp{\prime}}))\;\HOLSymConst{\HOLTokenEquiv{}}\\
 \;\;\HOLConst{TransferAuxDec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLFreeVar{ba}\;\HOLFreeVar{t}\;\HOLFreeVar{t\sp{\prime}}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{bl}\;\HOLFreeVar{bl\sb{\mathrm{2}}}\;\HOLFreeVar{bl\sb{\mathrm{2}}\sp{\prime}}\;\HOLFreeVar{e}\;\HOLFreeVar{e\sp{\prime}}\;\HOLFreeVar{h}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\HOLConst{less_than_quota}\;\HOLFreeVar{qu}\;\HOLFreeVar{t}\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\HOLConst{lessThanQuota}\;\HOLFreeVar{qu}\;\HOLFreeVar{t}\;\HOLFreeVar{h}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;dtcase\;\HOLFreeVar{bl}\;\HOLKeyword{of}\\
 \;\;\;\;\HOLConst{\ensuremath{[\,]}}\;\HOLTokenImp{}\;\HOLConst{false}\\
-\;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}\\
-\;\;\;\;(\HOLKeyword{let}\\
-\;\;\;\;\;\;\;\HOLBoundVar{gcp}\;=\;\HOLConst{get_cand_pile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p}\\
-\;\;\;\;\;\HOLKeyword{in}\\
+\;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}
+\;(\HOLKeyword{let}\;\HOLBoundVar{gcp}\;=\;\HOLConst{getCandPile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p}\;\HOLKeyword{in}\\
 \;\;\;\;\;\;\;\HOLSymConst{\HOLTokenNeg{}}\HOLConst{null}\;\HOLBoundVar{gcp}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{hbl}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLBoundVar{tbl}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{last}\;\HOLBoundVar{gcp}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;\;\;\;\;\;\HOLConst{\HOLConst{mem}}\;(\HOLBoundVar{hbl}\HOLSymConst{,}\HOLConst{\ensuremath{[\,]}})\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{subpile1}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{subpile2}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{p})\\
 \HOLConst{TransferActDec}\;\HOLFreeVar{v\sb{\mathrm{0}}}\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{1}}})\;\HOLFreeVar{v\sb{\mathrm{2}}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
 \HOLConst{TransferActDec}\;\HOLFreeVar{v\sb{\mathrm{3}}}\;(\HOLConst{NonFinal}\;\HOLFreeVar{v\sb{\mathrm{9}}})\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{5}}})\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}
 \end{holthmenv}
 \end{small}
-We next demonstrate how the framework modularly extends to instantiations  with various STV algorithms.
+The functions subpile1 and subplie2 together implement the lines marked by the star symbol in Definition of the TransferActSpec. We next demonstrate how the framework modularly extends to instantiations  with various STV algorithms.
 \subsection{Variations in Instantiation}
 We have already completed the verifiers synthesis process for five different STV algorithms\footnote{see  \url{https://github.com/MiladKetabGhale/Modular_Checker}}. Here,  we only discuss instantiation of the transfer-elect  based on the  CADE STV~\cite{cade}. As we have already illustrated how a specification and the corresponding implementation of an algorithm advance, we therefore only elaborate on how CADE STV varies from ACT STV in textual descriptions of its  semantics and subsequently its implementations. 
 
-CADE STV is used for electing the board of trustees of the \emph{C}onference on \emph{A}utomated \emph{De}duction. The algorithm is radically different from ``standard'' STV algorithms. In particular, to the best of our knowledge, every ``normal'' STV algorithm at least respects $\bullet_{1}$. However CADE violates not only this condition but also all of the ACT's transfer-elected semantics components except $\bullet_{2}$. This unorthodox behaviour of CADE permeates to the semantics of other transitions as well to an extent where the algorithm is sometimes questioned to be a true member  of the STV family. But our framework flexibly  accommodates even the extraordinary ones. We catalogue CADE's transfer-elected informal semantics  conditions as follows.
+CADE STV is used for electing the board of trustees of the \emph{C}onference on \emph{A}utomated \emph{De}duction. The algorithm is radically different from ``standard'' STV algorithms. In particular, to the best of our knowledge, every ``normal'' STV algorithm at least respects Clause~$\bullet_{1}$. However CADE violates not only this condition but also all of the ACT's transfer-elected semantics components except Clause~$\bullet_{2}$. This unorthodox behaviour of CADE permeates to the semantics of other transitions as well to an extent where the algorithm is sometimes questioned to be a true member  of the STV family. But our framework flexibly  accommodates even the extraordinary ones. We catalogue CADE's transfer-elected informal semantics  conditions as follows.
 \begin{itemize}
 \item[$\star_{1}$] the backlog of  elected candidates contains one element.
 \item[$\star_{2}$] parcel of the element in the backlog of elected candidates is not empty.
 \item[$\star_{3}$] backlog of the elected candidates is emptied in the post-state of transfer-elect.
 \item[$\star_{4}$] the election \underline{restarts} after each round of transfer-elect.
 \end{itemize}  
-The clause $\star_{4}$ itself consists of the following sub-clauses.
+The Clause $\star_{4}$ itself consists of the following sub-clauses.
 \begin{itemize}
 \item[$\star_{4a}$] pile of \underline{all of the candidates} is emptied in the post-state.
 \item[$\star_{4b}$] all ballots in the piles of \underline{all candidates} are placed back into the list of uncounted ballots with the name of already elected candidate removed from those ballots.
@@ -767,9 +762,9 @@ The clause $\star_{4}$ itself consists of the following sub-clauses.
 \;\;\HOLConst{TransferAuxDec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLFreeVar{ba}\;\HOLFreeVar{t}\;\HOLFreeVar{t\sp{\prime}}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{bl}\;\HOLFreeVar{bl\sb{\mathrm{2}}}\;\HOLFreeVar{bl\sb{\mathrm{2}}\sp{\prime}}\;\HOLFreeVar{e}\;\HOLFreeVar{e\sp{\prime}}\;\HOLFreeVar{h}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\\
 \;\;dtcase\;\HOLFreeVar{bl}\;\HOLKeyword{of}\\
 \;\;\;\;\HOLConst{\ensuremath{[\,]}}\;\HOLTokenImp{}\;\HOLConst{false}\\
-\;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}\\
-\;\;\;\;\HOLBoundVar{tbl}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{APPEND_ALL}\;\HOLFreeVar{p}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\HOLSymConst{\HOLTokenNeg{}}\HOLConst{null}\;(\HOLConst{get_cand_pile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{ALL_EMPTY}\;\HOLFreeVar{l}\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{=}\;\HOLFreeVar{l}\\
+\;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}
+\;\HOLBoundVar{tbl}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{APPEND_ALL}\;\HOLFreeVar{p}\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\;\;\HOLSymConst{\HOLTokenNeg{}}\HOLConst{null}\;(\HOLConst{getCandPile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{ALL_EMPTY}\;\HOLFreeVar{l}\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{=}\;\HOLFreeVar{l}\\
 \HOLConst{TransferCadeDec}\;\HOLFreeVar{v\sb{\mathrm{0}}}\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{1}}})\;\HOLFreeVar{v\sb{\mathrm{2}}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
 \HOLConst{TransferCadeDec}\;\HOLFreeVar{v\sb{\mathrm{3}}}\;(\HOLConst{NonFinal}\;\HOLFreeVar{v\sb{\mathrm{9}}})\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{5}}})\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}
 \end{holthmenv}
@@ -828,23 +823,23 @@ As the specification and implementation are equivalent, we shall only discuss th
 \end{small}
 Then we implement the function valid\textunderscore{}judgements\textunderscore{}dec which recursively calls Valid\textunderscore{}Step on a list of machine states.
 \begin{small}
- \begin{holthmenv}
-  \HOLConst{valid_judgements_dec}\;\HOLFreeVar{v\sb{\mathrm{0}}}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
+\begin{holthmenv}
+\HOLConst{valid_judgements_dec}\;\HOLFreeVar{v\sb{\mathrm{0}}}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
 \HOLConst{valid_judgements_dec}\;\HOLFreeVar{v\sb{\mathrm{1}}}\;[\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{2}}}]\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{true}\\
 \HOLConst{valid_judgements_dec}\;\HOLFreeVar{v\sb{\mathrm{3}}}\;[\HOLConst{NonFinal}\;\HOLFreeVar{v\sb{\mathrm{10}}}]\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
 \HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{j\sb{\mathrm{0}}}\HOLSymConst{::}\HOLFreeVar{j\sb{\mathrm{1}}}\HOLSymConst{::}\HOLFreeVar{js})\;\HOLSymConst{\HOLTokenEquiv{}}\\
-\;\;\HOLConst{Valid_Step}\;\HOLFreeVar{params}\;\HOLFreeVar{j\sb{\mathrm{0}}}\;\HOLFreeVar{j\sb{\mathrm{1}}}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{j\sb{\mathrm{1}}}\HOLSymConst{::}\HOLFreeVar{js})
+\;\HOLConst{Valid_Step}\;\HOLFreeVar{params}\;\HOLFreeVar{j\sb{\mathrm{0}}}\;\HOLFreeVar{j\sb{\mathrm{1}}}\;\HOLSymConst{\HOLTokenConj{}}
+\;\HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{j\sb{\mathrm{1}}}\HOLSymConst{::}\HOLFreeVar{js})
 \end{holthmenv}
 \end{small} 
 The verifier in HOL4 is eventually defined a follows where the function initial\textunderscore{}Judgement\textunderscore{}dec decides if the first element of input evidence is a machine state correctly recording data of the initial state of tallying votes where no one has yet attracted any vote, the backlogs of elected and eliminated and the list of elected are all empty and every candidate is continuing. 
 \begin{small}
  \begin{holthmenv}
   \HOLConst{Check_Parsed_Certificate}\;\HOLFreeVar{params}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
-\HOLConst{Check_Parsed_Certificate}\;\HOLFreeVar{params}\\
-\;\;(\HOLFreeVar{first\HOLTokenUnderscore{}judgement}\HOLSymConst{::}\HOLFreeVar{rest\HOLTokenUnderscore{}judgements})\;\HOLSymConst{\HOLTokenEquiv{}}\\
-\;\;\HOLConst{Initial_Judgement_dec}\;(\HOLConst{snd}\;(\HOLConst{snd}\;\HOLFreeVar{params}))\;\HOLFreeVar{first\HOLTokenUnderscore{}judgement}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{first\HOLTokenUnderscore{}judgement}\HOLSymConst{::}\HOLFreeVar{rest\HOLTokenUnderscore{}judgements})
+\HOLConst{Check_Parsed_Certificate}\;\HOLFreeVar{params}
+\;(\HOLFreeVar{fst\HOLTokenUnderscore{}state}\HOLSymConst{::}\HOLFreeVar{rest\HOLTokenUnderscore{}states})\HOLSymConst{\HOLTokenEquiv{}}\\
+\;\;\HOLConst{Initial_Judgement_dec}\;(\HOLConst{snd}\;(\HOLConst{snd}\;\HOLFreeVar{params}))\;\HOLFreeVar{fst\HOLTokenUnderscore{}state}\;\HOLSymConst{\HOLTokenConj{}}\\
+\;\;\HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{fst\HOLTokenUnderscore{}state}\HOLSymConst{::}\HOLFreeVar{rest\HOLTokenUnderscore{}states})
 \end{holthmenv}
 \end{small} 
 One can use Check\textunderscore{}Parsed\textunderscore{}Certificate to run small sample elections manually encoded in HOL4's environment. However real evidence such as figure~\ref{EvInst} are stored in a file in an operating system which need to be read, parsed, and processed for validation. Therefore we need an executable verifier in an operating system's environment. On the other hand, Check\textunderscore{}Parsed\textunderscore{}Certificate despite its infeasibility for computation, is proven to behave correctly as the specification $\mathcal{V}_{spec}$ expects. How can we synthesise from it an executable verifier $\mathcal{V}$ that is both efficient for actual computation and provably correct with respect to $\mathcal{V}_{spec}$ and thus trustworthy? To this end, we invoke the verified CakeML's proof translator tool, its ecosystem and the compiler.
