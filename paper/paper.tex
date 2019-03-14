@@ -102,7 +102,7 @@ Our framework distils the similarities and differences of various instances of S
 \end{abstract}
 
 \begin{IEEEkeywords}
-
+Framework, Modularity, Single Transferable Voting, Algorithms, Veriable Computation, Proof Engineering, Code Synthesis, Elections, Trustworthiness, Transparency 
 \end{IEEEkeywords}
 \section{Introduction}\label{sec:intro}
 %\setlength{\abovedisplayskip}{0.5em}
@@ -560,10 +560,10 @@ instead of e.g. floating numbers. Elections with an STV counting scheme have a s
 \subsection{The Semantics and its Auxiliary Components}
 \label{sec:MachineSem}
 
-The semantics of each machine transition label consists of conjunctions of formally specified general pre- and post-conditions across STV schemes which enforce when and how to take a tallying action and what the immediate effect is. To demonstrate the process of specification, implementation and verification of the machine transitions and their semantics, we discuss the transfer-elect transition.
+The semantics of each machine transition label consists of conjunctions of formally specified general pre- and post-conditions across STV schemes which enforce when and how to take a tallying action and what the immediate effect is. To demonstrate the process of specification, implementation and verification of the machine transitions and their semantics, we discuss the transfer-elected transition.
 
 
-STV schemes \emph{explicitly} declare four conditions that must be satisfied  for any legitimate application of transfer-elect; 
+STV schemes \emph{explicitly} declare four conditions that must be satisfied  for any legitimate application of transfer-elected; 
 \begin{itemize}
 \item[a.] there are still vacancies to fill
 \item[b.] There are no uncounted ballots to deal with
@@ -573,17 +573,17 @@ STV schemes \emph{explicitly} declare four conditions that must be satisfied  fo
 \end{itemize}
 
 
-Also there are some \emph{implicit} conditions present in legal documents describing transfer-elect. These constraints come to attention either as the result of a straightforward understanding of the explicit conditions above or as   auxiliary components that are taken for granted by legislators but are
+Also there are some \emph{implicit} conditions present in legal documents describing transfer-elected. These constraints come to attention either as the result of a straightforward understanding of the explicit conditions above or as   auxiliary components that are taken for granted by legislators but are
 necessary for proper functioning of the explicit constraints;
 \begin{enumerate}
 \item every candidate in the pre- and post-state of transfer-elected has a unique tally and pile
-\item no one is elected or eliminated by applying transfer-elect
+\item no one is elected or eliminated by applying transfer-elected
 \item no candidate attracts any new vote by transfer-elect and therefore tallies remain the same
 \item candidates whose names appears in the backlog of elected are indeed among elected candidates
 \item any elected candidate is no longer a continuing candidate so that they do not receive votes any further
 \item the list of competing candidates in the election is not empty and has no duplication of names
 \end{enumerate}  
-Conjunctions of formal declarations of the above explicit and implicit conditions form the semantics of the transition label transfer-elect.   The predicate TransferAuxSpec defines  the semantics of this transition.
+Conjunctions of formal declarations of the above explicit and implicit conditions form the semantics of the transition label transfer-elected.   The predicate TransferAuxSpec defines  the semantics of this transition.
  \begin{small}
 \begin{holthmenv}
   \HOLConst{TransferAuxSpec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLFreeVar{ba}\;\HOLFreeVar{t}\;\HOLFreeVar{t\sp{\prime}}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{bl}\;\HOLFreeVar{bl\sb{\mathrm{2}}}\;\HOLFreeVar{bl\sb{\mathrm{2}}\sp{\prime}}\;\HOLFreeVar{e}\;\HOLFreeVar{e\sp{\prime}}\;\HOLFreeVar{h}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{\HOLTokenEquiv{}}\\
@@ -610,7 +610,9 @@ The predicate ValidInitCandList which realises item (6) asserts that each candid
   \HOLConst{Valid_PileTally}\;\HOLFreeVar{t}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLSymConst{\HOLTokenForall{}}\HOLBoundVar{c}.\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{\HOLConst{mem}}\;\HOLBoundVar{c}\;(\HOLConst{map}\;\HOLConst{fst}\;\HOLFreeVar{t})
 \end{holthmenv}
 \end{small}
-We implement for each of the above declarations a counterpart computational \underline{dec}ision procedure that is later translated and then extracted as part of the verifier for actual computation. To illustrate how this phase proceeds, we provide some instances. The following two functions together implement Valid\textunderscore{}PileTally.
+We implement for each of the above declarations a counterpart 
+%computational 
+\underline{dec}ision procedure that is later translated and then extracted as part of the verifier for actual computation. To illustrate how this phase proceeds, we provide some instances. The following two functions together implement Valid\textunderscore{}PileTally.
 \begin{small}
 \begin{holthmenv}
   \HOLConst{Valid_PileTally_dec1}\;\HOLConst{\ensuremath{[\,]}}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{true}\\
@@ -669,7 +671,7 @@ We exemplify how an instantiation of the transfer-elected succeeds for transferr
 \item[$\bullet_{2}$] the  parcel of an elected with surplus is not empty.
 \item[$\bullet_{3}$] distribution of the surplus of an elected candidate proceeds in one single step.
 \item[$\bullet_{4}$] surplus of elected candidates is distributed one at a time beginning with those who are elected earlier. 
-\item[$\bullet_{5}$] pile of the candidate whose surplus is transferred is emptied in the post-state of transfer-elect.
+\item[$\bullet_{5}$] pile of the candidate whose surplus is transferred is emptied in the post-state of transfer-elected.
 \item[$\bullet_{6}$] only the last parcel of votes  received (which resulted in a surplus) is transferred. It may be that the last parcel is the only parcel in a candidate's pile (if only one application of the count action has occurred), or more parcels exist (if several actions of count has happened as a result of earlier  elect, transfer or eliminate actions)
 \item[$\bullet_{7}$] pile of any candidate other than the one whose surplus is transferred at this stage remains the same.
 \item[$\bullet_{8}$] the fractional transfer value is subsequently computed depending on whether or not the last parcel is the only parcel of ballots in the pile of the elected candidate. 
@@ -688,11 +690,11 @@ We exemplify how an instantiation of the transfer-elected succeeds for transferr
 \;\;\;\;\;\;\;\;\;\;\HOLFreeVar{j\sb{\mathrm{2}}}\;\HOLSymConst{=}\;\HOLConst{NonFinal}\;(\HOLBoundVar{nba}\HOLSymConst{,}\HOLBoundVar{t\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{p\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{bl\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{bl\sb{\mathrm{2}}\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{e\sp{\prime}}\HOLSymConst{,}\HOLBoundVar{h\sp{\prime}})
 \end{holthmenv}
 \end{small}
-We augment the formal counterparts of the $\bullet_{i}$ conditions  to the clauses given in Section~\ref{sec:MachineSem} to obtain the specification TransferActSpec for transfer-elect of ACT STV.  
+We augment the formal counterparts of the $\bullet_{i}$ conditions  to the clauses given in Section~\ref{sec:MachineSem} to obtain the specification TransferActSpec for transfer-elected of ACT STV.  
 %The last conjunct of TransferActSpec asserts that the pile of every candidate other than $c$ remains the same in both pre- and post-state of the transition. 
-The lines denoted by the star symbol~($\star$) in Definition of TransferActSpec formalise the Clause~$\bullet_{7}$ above. Also note that we place the last parcel of the pile of the candidate $c$ whose votes are transferred first into the list of uncounted ballots so that in the subsequent transition count deals with distributing the votes and ``recalculating'' candidates' tallies and piles. Finally, because of efficiency purposes our system is designed to update the fractional transfer value of the surplus in formalisation of the elect transition instead of the transfer-elected transition. 
+The lines denoted by the star symbol~($\star$) in TransferActSpec formalise the Clause~$\bullet_{7}$ above. Also note that we place the last parcel of the pile of the candidate $c$ whose votes are transferred first into the list of uncounted ballots so that in the subsequent transition count deals with distributing the votes and ``recalculating'' candidates' tallies and piles. Finally, because of efficiency purposes our system is designed to update the fractional transfer value of the surplus in formalisation of the elect transition instead of the transfer-elected transition. 
 
-We next define computational twins for the components of TransferActSpec and use them to implement a computational counterpart for the semantics of the ACT transfer-elect. 
+We next define computational twins for the components of TransferActSpec and use them to implement a computational counterpart for the semantics of the ACT transfer-elected. 
 For example, the function getCandTally looks through a tally list $t$ and finds the tally of an input candidate name $c$. We then verify this function  computes the tally of candidates correctly and that indeed every candidate is assigned only one tally (item 1 of the implicit machine conditions).
 \begin{small}
 \begin{holthmenv}
@@ -739,20 +741,22 @@ Moreover lessThanQuota enforces its specification.
 \end{small}
 The functions subpile1 and subplie2 together implement the lines marked by the star symbol in Definition of the TransferActSpec. We next demonstrate how the framework modularly extends to instantiations  with various STV algorithms.
 \subsection{Variations in Instantiation}
-We have already completed the verifiers synthesis process for five different STV algorithms\footnote{see  \url{https://github.com/MiladKetabGhale/Modular_Checker}}. Here,  we only discuss instantiation of the transfer-elect  based on the  CADE STV~\cite{cade}. As we have already illustrated how a specification and the corresponding implementation of an algorithm advance, we therefore only elaborate on how CADE STV varies from ACT STV in textual descriptions of its  semantics and subsequently its implementations. 
+To exemplify the flexibility of our framework, we discuss an instantiation of the machine with the CADE STV as well. We refer the reader to our source code\footnote{see  \url{https://github.com/MiladKetabGhale/Modular_Checker}} for details of five other STV instances for which we have successfully completed the verifiers synthesis process. 
+%We have already completed the verifiers synthesis process for five different STV algorithms\footnote{see  \url{https://github.com/MiladKetabGhale/Modular_Checker}}. Here,  we only discuss instantiation of the transfer-elect  based on the  CADE STV~\cite{cade}.
+As we have already illustrated how a specification and the corresponding implementation of an algorithm advance, we therefore only elaborate on how CADE STV varies from ACT STV in textual descriptions of its  semantics and subsequently its implementations. 
 
 CADE STV is used for electing the board of trustees of the \emph{C}onference on \emph{A}utomated \emph{De}duction. The algorithm is radically different from ``standard'' STV algorithms. In particular, to the best of our knowledge, every ``normal'' STV algorithm at least respects Clause~$\bullet_{1}$. However CADE violates not only this condition but also all of the ACT's transfer-elected semantics components except Clause~$\bullet_{2}$. This unorthodox behaviour of CADE permeates to the semantics of other transitions as well to an extent where the algorithm is sometimes questioned to be a true member  of the STV family. But our framework flexibly  accommodates even the extraordinary ones. We catalogue CADE's transfer-elected informal semantics  conditions as follows.
 \begin{itemize}
 \item[$\star_{1}$] the backlog of  elected candidates contains one element.
 \item[$\star_{2}$] parcel of the element in the backlog of elected candidates is not empty.
-\item[$\star_{3}$] backlog of the elected candidates is emptied in the post-state of transfer-elect.
-\item[$\star_{4}$] the election \underline{restarts} after each round of transfer-elect.
+\item[$\star_{3}$] backlog of the elected candidates is emptied in the post-state of transfer-elected.
+\item[$\star_{4}$] the election \underline{restarts} after each round of transfer-elected.
 \end{itemize}  
 The Clause $\star_{4}$ itself consists of the following sub-clauses.
 \begin{itemize}
 \item[$\star_{4a}$] pile of \underline{all of the candidates} is emptied in the post-state.
 \item[$\star_{4b}$] all ballots in the piles of \underline{all candidates} are placed back into the list of uncounted ballots with the name of already elected candidate removed from those ballots.
-\item[$\star_{4c}$] the eliminated candidates are ``resurrected'' meaning they start to be continuing candidates in the post-state.  
+\item[$\star_{4c}$] the eliminated candidates are ``resurrected'' meaning they start to be continuing candidates in the post-state~(implemented by the ListDiff function below).  
  %\subsection{Instantiation with an Arbitrary STV Algorithm}
 \end{itemize}
 \begin{small}
@@ -763,18 +767,20 @@ The Clause $\star_{4}$ itself consists of the following sub-clauses.
 \;\;dtcase\;\HOLFreeVar{bl}\;\HOLKeyword{of}\\
 \;\;\;\;\HOLConst{\ensuremath{[\,]}}\;\HOLTokenImp{}\;\HOLConst{false}\\
 \;\;\HOLTokenBar{}\;\HOLBoundVar{hbl}\HOLSymConst{::}\HOLBoundVar{tbl}\;\HOLTokenImp{}
-\;\HOLBoundVar{tbl}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{APPEND_ALL}\;\HOLFreeVar{p}\;\HOLSymConst{\HOLTokenConj{}}\\
-\;\;\;\;\HOLSymConst{\HOLTokenNeg{}}\HOLConst{null}\;(\HOLConst{getCandPile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p})\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{ALL_EMPTY}\;\HOLFreeVar{l}\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{=}\;\HOLFreeVar{l}\\
+\;\HOLBoundVar{tbl}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLFreeVar{bl\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLSymConst{\HOLTokenNeg{}}\HOLConst{null}\;(\HOLConst{getCandPile}\;\HOLBoundVar{hbl}\;\HOLFreeVar{p})\;\HOLSymConst{\HOLTokenConj{}}\\\;\;\;\;\HOLFreeVar{ba\sp{\prime}}\;\HOLSymConst{=}\;\HOLConst{APPEND_ALL}\;\HOLFreeVar{p}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{ALL_EMPTY}\;\HOLFreeVar{l}\;\HOLFreeVar{p\sp{\prime}}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{ListDiff}\;\HOLFreeVar{e\sp{\prime}}\;\HOLFreeVar{h\sp{\prime}}\;\HOLFreeVar{l}\\
 \HOLConst{TransferCadeDec}\;\HOLFreeVar{v\sb{\mathrm{0}}}\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{1}}})\;\HOLFreeVar{v\sb{\mathrm{2}}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}\\
 \HOLConst{TransferCadeDec}\;\HOLFreeVar{v\sb{\mathrm{3}}}\;(\HOLConst{NonFinal}\;\HOLFreeVar{v\sb{\mathrm{9}}})\;(\HOLConst{Final}\;\HOLFreeVar{v\sb{\mathrm{5}}})\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{false}
 \end{holthmenv}
 \end{small}
+%The function ListDiff implements the Clause~$_{4c}$.
+%The function ListDiff implements the Clause~$_{4c}$ to ensure only those competing candidates who are not already elected are given chance to compete again.
+%The function ListDiff above checks if the list of continuing candidates in the post state \textsf{h'} consists of all of the competing candidates except those who are already elected~(Clause~$_{4c}$).
 \begin{remark}\label{naming}
-In this section, when we instantiated transitions of the machine, particularly transfer-elected, we named instantiations differently. For example, we represented instantiation of transfer-elected with the ACT STV by  Transfer\underline{Act}Dec. This choice was out of pedagogical purposes to assist the reader with understanding the work. In actual engineering however we practice a sensible alternative. We carry out different instantiations of the machine in separate modules but uniformly name instantiations of the transitions. For example, for instantiation of the machine with the ACT STV, we have a module accordingly named and inside the module we refer, for instance, to instantiation of transfer-elect as TransferDec or TransferSpec without the infix Act.
+In this section, when we instantiated transitions of the machine, particularly transfer-elected, we named instantiations differently. For example, we represented instantiation of transfer-elected with the ACT STV by  Transfer\underline{Act}Dec. This choice was out of pedagogical purposes to assist the reader with understanding the work. In actual engineering however we practice a sensible alternative. We carry out different instantiations of the machine in separate modules but uniformly name instantiations of the transitions. For example, for instantiation of the machine with the ACT STV, we have a module accordingly named and inside the module we refer, for instance, to instantiation of transfer-elected as TransferDec or TransferSpec without the infix Act.
 \end{remark}
 \begin{remark}\label{rewrting}
 The Core calculus of HOL4 uses \emph{term rewriting} to manipulate assertions expressed in higher-order logic and ML programming style.   
-Since HOL4 is a rewriting system, what appears as the name of an assertion on the left of $\Leftrightarrow$ is therefore secondary to its definitional content on the right side. In light of the previous remark, we can uniformly refer to \emph{names} of instantiated transitions regardless of the algorithm used. Therefore we can formulate evidence verifier based on the names of the transitions but call in the desired instantiation  module to embody the names with the semantics  of the algorithm intended to obtain a verifier for. Consequently the Verifier, Translation, DeepSpec and Compilation modules in Figure~\ref{PicArc} which all depend on instantiation modules as their parents  are    developed once and for all.   
+Since HOL4 is a rewriting system, what appears as the name of an assertion on the left of $\Leftrightarrow$ is therefore secondary to its definitional content on the right side. In light of the previous remark, we can uniformly refer to \emph{names} of instantiated transitions regardless of the algorithm used. Therefore we can formulate evidence verifier based on the names of the transitions but call in the desired instantiation  module to embody the names with the semantics  of the algorithm intended to obtain a verifier for. Consequently the Verifier, Translation, DeepSpec and Compilation modules in Figure~\ref{PicArc} which all depend on instantiation modules as their parents  are  developed once and for all.   
 \end{remark}
 
  
@@ -915,8 +921,8 @@ Other approaches focus on the  formalisation and verification of algorithms for 
 
 
 There is work which formally verify some STV algorithms in the theorem prover Coq. Ghale~et~al~\cite{Ghale:2017:FVS} formalise the student union STV algorithm used in some union elections Australia. Pattinson and Schurmann~\cite{DBLP:conf/ausai/PattinsonS15} verify the ``vanilla'' STV algorithm.   Pattinson and Tiwari~\cite{DBLP:conf/itp/PattinsonT17} prove the Schultz voting scheme correct, and Verity and Pattinson~\cite{DBLP:conf/acsw/VerityP17} verify an invariant of STV. Finally, Ghale~et~al~\cite{} provide a modular treatment of formalisation and verification of STV algorithms. They all then employ the automatic program extraction tool of Coq to obtain Haskell or OCaml programs to provably correctly compute election results based on the algorithm for any real input data. These programs output verifiable evidence upon each execution. Some of them~\cite{DBLP:conf/ausai/PattinsonS15,DBLP:conf/itp/PattinsonT17}    
- implement a verifier for checking the correctness of execution instances. However, the verifier is not verified. They implement their verifier as Haskell programs without proving that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there remains other unverified layers to trust in. For example, they rely on the GHC compiler to execute the program in the operating system. As GHC is not a verified compiler one has to trust that the executable machine code also behaves correctly. 
-    
+ implement a verifier for checking the correctness of execution instances. However, the verifier is not verified. They implement their verifier as Haskell programs without proving that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there remains other unverified layers to trust in. For example, they rely on the GHC compiler to execute the program. As GHC is not a verified compiler one has to trust that the machine code executed also behaves correctly. 
+  
  %<Name of first author> et. al. \footnote{DP: reference} use the Coq theorem prover to formalise the algorithm\footnote{DP: which?} and  verify some of its properties. Then they employ the automatic program extraction of Coq to obtain Haskell or OCaml programs to provably compute election results based on the algorithm for any real input data to the program. These programs output verifiable evidence upon each execution. <Name of first author> et. al. \footnote{DP:reference} implement a verifier for independently scrutinising correctness of instances of computation carried out. However the verifier itself is not verified. Verifiers are implemented as a Haskell program without formally demonstrating that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there are other unverified layers to trust in as well. For example  they rely on the GHC compiler to execute the program in the operating system. As GHC is not a verified compiler one has to trust the executable machine code also behaves correctly. 
 
 Others employ other theorem proving means such Delphin~\cite{Dolphin} or HOL4. Schurmann and DeYoung~\cite{DeYoung:2012:LLV} have pioneered the use of theorem proving in vote counting. They use Linear Logic~\cite{DBLP:journals/apal/Girard93} to specify the semantics of a specific STV which is similar to Victoria STV except that it transfers votes of an eliminated candidate at once. Although the program obtained from the formalisation performs decently, reading their encoding is challenging due to complexity of Linear Logic syntax. As the expressive power of Linear Logic is limited compared to higher-order logic, their definition of the count action, for example, uses eight auxiliary assertions which further complicates
