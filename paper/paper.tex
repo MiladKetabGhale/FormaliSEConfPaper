@@ -44,6 +44,8 @@
 \NewEnviron{holthmenv}{\[\begin{array}[t]{l}\BODY\end{array}\]\ignorespacesafterend}
 \newcommand{\TODO}[1]{{\bf TODO:} #1}
 
+\setlength{\textfloatsep}{5pt}
+\setlength{\intextsep}{5pt}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
@@ -139,7 +141,7 @@ candidates have been elected, or  the order in which surplus ballots are
 being transferred.
 
 The goal of this paper is to advance formal methods in elections by
-demonstrating how STV vote counting can be verified in a modular,
+demonstrating how STV counting can be verified in a modular,
 transparent, and practical feasible way over a minimal computational
 trust base:  we show how to synthesise efficient and provably
 correct verifiers for a large class of STV schemes in a modular and
@@ -172,7 +174,7 @@ actions differs. We formalise these actions as rules that advance the state of t
 pre- and postconditions for each rule as well as a boolean function that decides whether a rule has been applied correctly. 
 
 Executable evidence verifiers are constructed almost
-automatically:  nearly all of the ensuing proof obligations are discharged generically, and we fully  automate the subsequent translation into machine-level verified executable using CakeML.
+automatically:  nearly all of the ensuing proof obligations are discharged generically, and we fully  automate the translation into machine-level verified executable using CakeML.
 
 
 
@@ -263,9 +265,9 @@ must facilitate designing and developing the framework modularly
 while offering automation for synthesising verifiers.
 
 
-We also identify a general algorithmic mechanism for performing
+We also identify a general algorithmic mechanism to perform
 computation on evidence, which realises the \emph{commonalities}
-among the members of the STV family. This generic method comprises seven general actions%~(Figure~\ref{GenSteps})  
+among the members of the STV family. This comprises seven general actions%~(Figure~\ref{GenSteps})  
 ~(Definition~\ref{transitions}) corresponding to actions that tally officers take when counting votes.
 \begin{definition}[Generic Counting Actions]\label{transitions}
  The following comprise the generic STV counting actions.
@@ -320,7 +322,7 @@ be respectively the set of machine states and transition labels.  Also assume fo
 \end{definition}
 There are nonetheless variations in STV algorithms  which we  recognise  by separate \emph{instantiations} into the machine.  
 \subsection{Instantiations of the Machine with Specific STV schemes}
-\noindent
+%\noindent
 Differences exist between counting algorithms of STV schemes.  For
 example in the STV used for electing the upper house representatives
 of the Australian State of Victoria (Victoria STV)~\cite{vic},
@@ -365,7 +367,7 @@ lists of machine states. The state $\Omega_{i-1}$ is a pre-state and $\Omega_{i}
 We shall next provide an example to concretely illustrate a piece of evidence and exemplify how STV schemes work. 
  \subsection{An Example of a Concrete Piece of Evidence}
 \label{subsec:InstEv}
-\noindent
+%\noindent
 Figure~\ref{EvInst} shows evidence of a small election whose counting algorithm is the ACT STV 
 with three candidates $a$, $b$ and $c$, and initially recorded ballots containing
 $b_1=([a,c],1/1)$, $b_2=([a,b,c],1/1)$, $b_3=([a,c,b],1/1)$,
@@ -409,7 +411,7 @@ b\{[[$b_4$]]\} c\{[[$b_5$]]\}; []; []; [a,b,c]} \LeftLabel{\tiny count}
 [a,b,c]} \DisplayProof \end{tabular} \caption{An example of  Evidence} \label{EvInst} \end{figure} \end{small}
 
 \section{The Framework Architecture}\label{sec:Arc} 
-\noindent
+%\noindent
 We progress through three macro-level phases to develop the framework. For the first phase we use HOL4 to formally specify, implement and verify the generic STV, its instantiations, verifiers, and every auxiliary assertions needed for these ends. The second step relies on the verified proof translation tool of CakeML to provably correctly translate implementations of the first phase into equivalent CakeML implementations. The last phase uses the ecosystem of CakeML and its verified compiler to generate machine executable evidence verifiers.   
 
 
@@ -595,7 +597,7 @@ For any translated verifier $\mathcal{V}_{\tau}$ and the translated evidence par
        (parser) edge [bend right= 60] node[anchor=north,above]{} (Aux);
        
 \end{tikzpicture}
-\caption{Architecture of the Framework, note that direction of arrow represents module dependencies}
+\caption{Architecture of the Framework, direction of arrow represents module dependencies}
 \label{PicArc}
 \end{figure}
 \paragraph*{\textbf{Compilation}} 
@@ -713,14 +715,16 @@ The predicate ValidInitCandList which realises item (6) asserts that each candid
 We implement for each of the above declarations a counterpart 
 %computational 
 \underline{dec}ision procedure that is later translated and then extracted as part of the verifier for actual computation. To illustrate how this phase proceeds, we provide some instances. The following two functions together implement Valid\textunderscore{}PileTally.
+
 \begin{small}
 \begin{holthmenv}
   \HOLConst{Valid_PileTally_dec1}\;\HOLConst{\ensuremath{[\,]}}\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{true}\\
 \HOLConst{Valid_PileTally_dec1}\;(\HOLFreeVar{h}\HOLSymConst{::}\HOLFreeVar{t})\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenEquiv{}}\\
 \;\;\HOLConst{\HOLConst{mem}}\;(\HOLConst{fst}\;\HOLFreeVar{h})\;\HOLFreeVar{l}\;\HOLSymConst{\HOLTokenConj{}}\;\HOLConst{Valid_PileTally_dec1}\;\HOLFreeVar{t}\;\HOLFreeVar{l}
 \end{holthmenv}
-\end{small}
-\begin{small}
+%\end{small}
+%\vspace*{-1.6ex}
+%\begin{small}
 \begin{holthmenv}
   \HOLConst{Valid_PileTally_dec2}\;\HOLFreeVar{t}\;\HOLConst{\ensuremath{[\,]}}\;\HOLSymConst{\HOLTokenEquiv{}}\;\HOLConst{true}\\
 \HOLConst{Valid_PileTally_dec2}\;\HOLFreeVar{t}\;(\HOLFreeVar{l\sb{\mathrm{0}}}\HOLSymConst{::}\HOLFreeVar{ls})\;\HOLSymConst{\HOLTokenEquiv{}}\\
@@ -736,6 +740,7 @@ We prove that the implementations and specification match:
 \end{holthmenv}
 \end{small}
 Conjunctions of the computational implementations  define a computational twin TransferAuxDec for the specification  of the transfer-elected semantics TransferAuxSpec. 
+
 \begin{small}
 \begin{holthmenv}
   \HOLConst{TransferAuxDec}\;(\HOLFreeVar{qu}\HOLSymConst{,}\HOLFreeVar{st}\HOLSymConst{,}\HOLFreeVar{l})\;\HOLFreeVar{ba}\;\HOLFreeVar{t}\;\HOLFreeVar{t\sp{\prime}}\;\HOLFreeVar{p}\;\HOLFreeVar{p\sp{\prime}}\;\HOLFreeVar{bl}\;\HOLFreeVar{bl\sb{\mathrm{2}}}\;\HOLFreeVar{bl\sb{\mathrm{2}}\sp{\prime}}\;\HOLFreeVar{e}\;\HOLFreeVar{e\sp{\prime}}\;\HOLFreeVar{h}\;\HOLFreeVar{h\sp{\prime}}\;\HOLSymConst{\HOLTokenEquiv{}}\\
@@ -925,11 +930,23 @@ We engineer the framework in a way that the proofs module calls instantiation mo
 
 
 Engineered this way, the desideratum is met under the following two scenarios for the proofs module. However for a third scenario, proofs in the module may break so that proving the equivalences  becomes a semi-automatic interactive procedure. The proofs nonetheless remain reusable after proper refinements so that one needs not re-encoding 200 lines.  
- \paragraph*{Scenario one} We have already formalised and verified instantiations of the machine with five different STV algorithms. If the algorithm $\mathcal{A}$ already exists in our framework then the desideratum is satisfied. No effort beyond following simple instructions to execute on the command line is required to synthesise an executable verifier.  
- \paragraph*{Scenario two} Another possibility is that 
+
+\emph{Scenario one.} We have already formalised and verified instantiations of the machine with five different STV algorithms. If the algorithm $\mathcal{A}$ already exists in our framework then the desideratum is satisfied. No effort beyond following simple instructions to execute on the command line is required to synthesise an executable verifier.  
+
+\emph{Scenario two.} Another possibility is that 
  %the algorithm intended to be instantiated into the machine 
- $\mathcal{A}$ as a whole does not literally match with any of the already existing instantiations of the machine. However, clauses describing pre- and post-conditions of transitions which are components of the semantics of $\mathcal{A}$ do exist in the auxiliary module. Then all one needs doing is to call the formal  specifications of the clauses and their respective implementations into the specification and implementation of transitions, respectively,  to formally obtain an instantiation of the algorithm. In this case, the proofs also succeed in satisfying the desideratum. 
- \paragraph*{Scenario three} 
+ $\mathcal{A}$ as a whole does not literally match with any of the
+ already existing instantiations of the machine. However, clauses
+ describing pre- and post-conditions of transitions which are
+ components of the semantics of $\mathcal{A}$ do exist in the
+ auxiliary module. Then all one needs doing is to call the formal
+ specifications of the clauses and their respective implementations
+ into the specification and implementation of transitions,
+ respectively,  to formally obtain an instantiation of the
+ algorithm. In this case, the proofs also succeed in satisfying the
+ desideratum. 
+
+\emph{Scenario three.} 
  Suppose there is a clause in description of $\mathcal{A}$ whose specification, and  therefore implementation,  does not exist in the auxiliary module. Then one trivially has to extend the auxiliary module by specifying and implementing that clause and then verifying the implementation correct against the specification.  If one was overconfident in their implementation, then they can take the implementation as its specification in which case  no verification is required.  Note that as including the generic formal machine transitions in the semantics of each transition instantiation is mandatory  
  there are few  numbers of such clauses and consequently few lines of encoding needed to formalise them. 
  
@@ -1086,7 +1103,7 @@ We introduced a framework to synthesise provably trustworthy tools for transpare
 
 \begin{thebibliography}{00}
 \bibitem{act}
-ACT Electoral Commission, \url{www.elections.act.gov.au/elections\_and\_voting} 
+ACT Electoral Commission, \url{www.elections.act.gov.au/elections_and_voting} 
 \bibitem{MBlo}
 M.L. Blom, P. J. Stuckey, V. J. Teague, Computing the Margin of Victory in Preferential Parliamentary Elections, E-Vote-ID, 2018, pp.1--16
 \bibitem{cade}
