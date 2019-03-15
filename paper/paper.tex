@@ -624,7 +624,11 @@ exploit the (already
  verified) tools to formalise the framework and avoid re-proving
  assertions from scratch.
  \item HOL4 also has well-developed
+<<<<<<< HEAD
  tactics for discharging proof obligations on assertions involving list structure and operations on it. This notably eases the verification phase. 
+=======
+ tactics for discharging proof obligations on assertions involving list structure and operations on it. This significantly eases the process of verification. 
+>>>>>>> 5a1de3a279bd8c36ac71164be9920ef877fe5b48
  \item Understanding the data structure used in the framework implementation is critical for ease of its usability and extensibility by third parties.  The type $\mathit{judgement}$ closely models concrete evidence such as the one in Figure~\ref{EvInst}. Therefore one can sensibly perceive the abstraction step taken for modelling concrete data which in turn enhances understandability of the framework and its mechanism. 
    \end{itemize}
 \begin{definition}\label{judgement}
@@ -655,7 +659,11 @@ Implementing piles in this way enables us to tailor the semantics of the transfe
 
 There is also a reason for choosing the type $rat$  
 %as the underlying arithmetic for the formalisation, 
+<<<<<<< HEAD
 instead of e.g. floating numbers. Elections with an STV counting scheme have a small margin of victory especially for the last vacancy left to fill \cite{MBlo}. This margin may happen to be less than the magnitude of error caused by the accumulation of rounding errors as it is with floating points.  Hence one must sensibly avoid the high cost of electing a wrong candidate by falling into traps of imprecise calculations due to unintelligent choices. Using exact fractions allows safe handling of calculations. 
+=======
+instead of e.g. floating numbers. Elections with an STV counting scheme have a small margin of victory especially for the last vacancy left to fill \cite{MBlo}. This margin may happen to be less than the magnitude of the error caused by the accumulation of rounding errors as it is with floating points.  Hence one must sensibly avoid the high cost of electing a wrong candidate by falling into traps of imprecise calculations due to unintelligent choices. Using exact fractions allows safe handling of calculations. 
+>>>>>>> 5a1de3a279bd8c36ac71164be9920ef877fe5b48
 \subsection{The Semantics and its Auxiliary Components}
 \label{sec:MachineSem}
 
@@ -676,7 +684,7 @@ Also there are some \emph{implicit} conditions present in legal documents descri
 necessary for proper functioning of the explicit constraints;
 \begin{enumerate}
 \item every candidate in the pre- and post-state of transfer-elected has a unique tally and pile
-\item no one is elected or eliminated by applying transfer-elect
+\item no one is elected or eliminated by applying transfer-elected
 \item no candidate attracts any new vote by transfer-elect and therefore tallies remain the same
 \item candidates whose names appear in the backlog of elected are indeed among elected candidates
 \item any elected candidate is no longer a continuing candidate so that they do not receive votes any further
@@ -694,9 +702,13 @@ Conjunctions of formal declarations of the above explicit and implicit condition
 \end{holthmenv}
 \end{small}
 
+<<<<<<< HEAD
 Transfer-elected, 
 %as is the case for 
  similar to other formalised transitions, is parametrised by the quota $qu$, the number of initial vacancies $st$ and the list $l$ of all candidates competing in the election. The semantics of the transition declares that given the ballots $ba$, tally $t$, pile $p$, backlog of elected $bl$, backlog of eliminated $bl_{2}$ and the list of elected $e$ and continuing candidates $h$ in the pre-state of transfer-elected, and their respective counterparts in the post-state characterised by having a prime symbol, some conditions as specified above are satisfied by the transition.  Note that \textsf{mem} in TransferAuxSpec declares list membership. 
+=======
+Transfer-elected, as is the case for other formalised transitions, is parametrised by the quota $qu$, the number of initial vacancies $st$ and the list $l$ of all candidates competing in the election. The semantics of the transition declares that given the ballots $ba$, tally $t$, pile $p$, backlog of elected $bl$, backlog of eliminated $bl_{2}$ and the list of elected $e$ and continuing candidates $h$ in the pre-state of transfer-elected, and their respective counterparts in the post-state characterised by having a prime symbol, some conditions as specified above are satisfied by the transition.  Note that \textsf{mem} in Definition of TransferAuxSpec declares list membership. 
+>>>>>>> 5a1de3a279bd8c36ac71164be9920ef877fe5b48
   
    
   
@@ -770,7 +782,11 @@ family,  instead of e.g. First-Past-The-Post
 voting~\cite{DFar} where voters choose whom they prefer most and the
 candidate with the most amount of votes received is elected.
 However we wish to generate verifiers that can recognise and
+<<<<<<< HEAD
 validate according to which specific instances of STV  
+=======
+validate according to specific instances of STV. 
+>>>>>>> 5a1de3a279bd8c36ac71164be9920ef877fe5b48
 $\omega$ has been output. Hence we need to enrich the computational
 content of the machine semantics with more  pre- and postconditions
 which are particular to individual STV schemes. We refer to this
@@ -858,7 +874,11 @@ Moreover lessThanQuota enforces its specification.
 \end{small}
 The functions subpile1 and subplie2 together implement the lines marked by the star symbol in Definition of the TransferActSpec. We next demonstrate how the framework modularly extends to instantiations  with various STV algorithms.
 \subsection{Variations in Instantiation}
+<<<<<<< HEAD
 To exemplify the flexibility of our framework, we discuss an instantiation of the machine with the CADE STV as well. We refer the reader to our source code\footnote{ see  \url{https://github.com/MiladKetabGhale/Modular_Checker}} for details of five other STV instances for which we have successfully completed the verifiers' synthesis process. 
+=======
+To exemplify the flexibility of our framework, we discuss an instantiation of the machine with the CADE STV as well. We refer the reader to our source code\footnote{see  \url{https://github.com/MiladKetabGhale/Modular_Checker}} for details of five other STV instances for which we have successfully completed the verifiers' synthesis process. 
+>>>>>>> 5a1de3a279bd8c36ac71164be9920ef877fe5b48
 %We have already completed the verifiers synthesis process for five different STV algorithms\footnote{see  \url{https://github.com/MiladKetabGhale/Modular_Checker}}. Here,  we only discuss instantiation of the transfer-elect  based on the  CADE STV~\cite{cade}.
 As we have already illustrated how a specification and the corresponding implementation of an algorithm advance, we therefore only elaborate on how CADE STV varies from ACT STV in textual descriptions of its  semantics and subsequently its implementations. 
 
@@ -992,7 +1012,11 @@ The verifier in HOL4 is eventually defined as a follows. The function initial\te
 \;\;\HOLConst{valid_judgements_dec}\;\HOLFreeVar{params}\;(\HOLFreeVar{fst\HOLTokenUnderscore{}state}\HOLSymConst{::}\HOLFreeVar{rest\HOLTokenUnderscore{}states})
 \end{holthmenv}
 \end{small} 
+<<<<<<< HEAD
 One can use Check\textunderscore{}Parsed\textunderscore{}Certificate to run small sample elections manually encoded in HOL4's environment. However real evidence such as Figure~\ref{EvInst} are stored in a file in an operating system which needs to be read, parsed, and processed for validation. Therefore we need an executable verifier in an operating system's environment. On the other hand, Check\textunderscore{}Parsed\textunderscore{}Certificate despite its infeasibility for computation is proven to behave correctly as the specification $\mathcal{V}_{spec}$ expects. How can we synthesise from it an executable verifier $\mathcal{V}$ that is both efficient for actual computation and provably correct with respect to $\mathcal{V}_{spec}$ and thus trustworthy? To this end, we invoke the verified CakeML's proof translator tool~\cite{cakeTrans}, its ecosystem and the compiler~\cite{CakeComp}.
+=======
+One can use Check\textunderscore{}Parsed\textunderscore{}Certificate to run small sample elections manually encoded in HOL4's environment. However real evidence such as Figure~\ref{EvInst} are stored in a file in an operating system which needs to be read, parsed, and processed for validation. Therefore we need an executable verifier in an operating system's environment. On the other hand, Check\textunderscore{}Parsed\textunderscore{}Certificate despite its infeasibility for computation is proven to behave correctly as the specification $\mathcal{V}_{spec}$ expects. How can we synthesise from it an executable verifier $\mathcal{V}$ that is both efficient for actual computation and provably correct with respect to $\mathcal{V}_{spec}$ and thus trustworthy? To this end, we invoke the verified CakeML's proof translator tool, its ecosystem and the compiler.
+>>>>>>> 5a1de3a279bd8c36ac71164be9920ef877fe5b48
 
 Using the verified CakeML's translator we obtain a translated version of the verifier $\mathcal{V}_{\tau}$. Thanks to the translator, we are guaranteed that every property proven for  
  Check\textunderscore{}Parsed\textunderscore{}Certificate and its components also holds for $\mathcal{V}_{\tau}$ and its components. Therefore correctness of the verifier in HOL4 provably extends to that of $\mathcal{V}_{\tau}$. The translated verifier $\mathcal{V}_{\tau}$ is a pure function operating in CakeML's environment. To synthesise an executable verifier that actually opens files, parses evidence lines and validates them according to $\mathcal{V}_{spec}$, we implement a deeply embedded function called check\textunderscore{}count in CakeML's ecosystem.  CakeML has  libraries developed for modelling and verifying properties about I/O semantics of the executable versions  of a deeply embedded impure function.  Using this modelling we specify and prove that the specified and \underline{compiled} check\textunderscore{}count behaves as follows. 
@@ -1072,7 +1096,11 @@ Other approaches focus on the  formalisation and verification of algorithms for 
  tools. 
 
 
+<<<<<<< HEAD
 There is work which formally verifies some STV algorithms in the theorem prover Coq. Ghale~et~al~\cite{Ghale:2017:FVS} formalise the student union STV algorithm used in some union elections Australia. Pattinson and Schurmann~\cite{DBLP:conf/ausai/PattinsonS15} verify the ``vanilla'' STV algorithm.   Pattinson and Tiwari~\cite{DBLP:conf/itp/PattinsonT17} prove the Schultz voting scheme correct, and Verity and Pattinson~\cite{DBLP:conf/acsw/VerityP17} verify an invariant of STV. Finally, Ghale~et~al~\cite{Ghale2018} provide a modular treatment of formalisation and verification of STV algorithms. They all then employ the automatic program extraction tool of Coq to obtain Haskell or OCaml programs to provably correctly compute election results based on the algorithm for any real input data. These programs output verifiable evidence upon each execution. Some of them~\cite{DBLP:conf/ausai/PattinsonS15,DBLP:conf/itp/PattinsonT17}    
+=======
+There is work which formally verifies some STV algorithms in the theorem prover Coq. Ghale~et~al~\cite{Ghale:2017:FVS} formalise the student union STV algorithm used in some union elections Australia. Pattinson and Schurmann~\cite{DBLP:conf/ausai/PattinsonS15} verify the ``vanilla'' STV algorithm.   Pattinson and Tiwari~\cite{DBLP:conf/itp/PattinsonT17} prove the Schultz voting scheme correct, and Verity and Pattinson~\cite{DBLP:conf/acsw/VerityP17} verify an invariant of STV. Finally, Ghale~et~al~\cite{} provide a modular treatment of formalisation and verification of STV algorithms. They all then employ the automatic program extraction tool of Coq to obtain Haskell or OCaml programs to provably correctly compute election results based on the algorithm for any real input data. These programs output verifiable evidence upon each execution. Some of them~\cite{DBLP:conf/ausai/PattinsonS15,DBLP:conf/itp/PattinsonT17}    
+>>>>>>> 5a1de3a279bd8c36ac71164be9920ef877fe5b48
  implement a verifier for checking the correctness of execution instances. However, the verifier is not verified. They implement their verifier as Haskell programs without proving that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there remain other unverified layers to trust in. For example, they rely on the GHC compiler to execute the program. As GHC is not a verified compiler one has to trust that the machine code executed also behaves correctly. 
   
  %<Name of first author> et. al. \footnote{DP: reference} use the Coq theorem prover to formalise the algorithm\footnote{DP: which?} and  verify some of its properties. Then they employ the automatic program extraction of Coq to obtain Haskell or OCaml programs to provably compute election results based on the algorithm for any real input data to the program. These programs output verifiable evidence upon each execution. <Name of first author> et. al. \footnote{DP:reference} implement a verifier for independently scrutinising correctness of instances of computation carried out. However the verifier itself is not verified. Verifiers are implemented as a Haskell program without formally demonstrating that the verifier itself computes correctly. Moreover, even trusting that the verifier is reliable, there are other unverified layers to trust in as well. For example  they rely on the GHC compiler to execute the program in the operating system. As GHC is not a verified compiler one has to trust the executable machine code also behaves correctly. 
